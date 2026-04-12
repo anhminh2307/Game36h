@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Game Của Tôi - Y8.COM</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="my-games.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-y">Y</span>
+                    <span class="logo-8">8</span>
+                    <span class="logo-com">.COM</span>
+                </a>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Tìm kiếm game...">
+                <button class="search-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="header-actions">
+                <a href="login.html" class="btn-login">Đăng nhập</a>
+                <a href="register.html" class="btn-register">Đăng ký</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- My Games Content -->
+    <main class="main-content">
+        <div class="profile-container">
+            <!-- Page Header -->
+            <div class="my-games-header">
+                <h1>Quản Lý Game Của Tôi</h1>
+                <button class="btn-upload-game" onclick="openUploadModal()">
+                    <span>⬆️</span> Đăng tải game mới
+                </button>
+            </div>
+
+            <!-- Stats -->
+            <div class="my-games-stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="totalGames">0</span>
+                    <span class="stat-label">Tổng game</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="activeGames">0</span>
+                    <span class="stat-label">Đang hoạt động</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalViews">0</span>
+                    <span class="stat-label">Tổng lượt chơi</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="totalRating">0</span>
+                    <span class="stat-label">Đánh giá trung bình</span>
+                </div>
+            </div>
+
+            <!-- Games Table -->
+            <div class="games-table-container">
+                <table class="games-table" id="gamesTable">
+                    <thead>
+                        <tr>
+                            <th>Game</th>
+                            <th>Thể loại</th>
+                            <th>Lượt chơi</th>
+                            <th>Đánh giá</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày đăng</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gamesTableBody">
+                        <!-- Games will be loaded here -->
+                    </tbody>
+                </table>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">🎮</div>
+                    <h3>Chưa có game nào</h3>
+                    <p>Bạn chưa đăng tải game nào. Hãy đăng game đầu tiên của bạn ngay!</p>
+                    <button class="btn-upload-game" onclick="openUploadModal()">
+                        <span>⬆️</span> Đăng game ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Upload Game Modal -->
+    <div class="modal-overlay" id="uploadModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Đăng Tải Game Mới</h2>
+                <button class="modal-close" onclick="closeUploadModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadGameForm" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="gameTitle">Tên game *</label>
+                        <input type="text" id="gameTitle" name="title" required 
+                               placeholder="Nhập tên game">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Thể loại *</label>
+                        <div class="category-checkboxes" id="gameCategoryCheckboxes">
+                            <!-- Categories will be loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gameDescription">Mô tả</label>
+                        <textarea id="gameDescription" name="description" rows="4"
+                                  placeholder="Mô tả về game của bạn..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loại game *</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="uploadType" value="link" checked 
+                                       onchange="toggleUploadType('link')">
+                                <span>Link game</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="uploadType" value="file" 
+                                       onchange="toggleUploadType('file')">
+                                <span>File game (ZIP/HTML)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="linkInputGroup">
+                        <label for="gameUrl">URL game *</label>
+                        <input type="url" id="gameUrl" name="game_url" 
+                               placeholder="https://example.com/game">
+                    </div>
+
+                    <div class="form-group" id="fileInputGroup" style="display: none;">
+                        <label for="gameFile">File game *</label>
+                        <div class="file-upload">
+                            <input type="file" id="gameFile" name="game_file" 
+                                   accept=".zip,.html,.htm">
+                            <div class="file-upload-area">
+                                <span class="file-icon">📁</span>
+                                <span class="file-text">Kéo thả file hoặc click để chọn</span>
+                                <span class="file-hint">Hỗ trợ: .zip, .html</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="gameThumbnail">Thumbnail</label>
+                        <div class="file-upload">
+                            <input type="file" id="gameThumbnail" name="thumbnail" 
+                                   accept="image/*">
+                            <div class="file-upload-area thumbnail-area">
+                                <span class="file-icon">🖼️</span>
+                                <span class="file-text">Chọn ảnh thumbnail</span>
+                                <span class="file-hint">Tỷ lệ 16:9, tối đa 2MB</span>
+                            </div>
+                        </div>
+                        <div class="thumbnail-preview" id="thumbnailPreview"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-cancel" onclick="closeUploadModal()">
+                            Hủy
+                        </button>
+                        <button type="submit" class="btn-submit" id="submitUploadBtn">
+                            <span>⬆️</span> Đăng tải
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Game Modal -->
+    <div class="modal-overlay" id="editModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Chỉnh Sửa Game</h2>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editGameForm">
+                    <input type="hidden" id="editGameId">
+                    
+                    <div class="form-group">
+                        <label for="editGameTitle">Tên game *</label>
+                        <input type="text" id="editGameTitle" name="title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Thể loại *</label>
+                        <div class="category-checkboxes" id="editGameCategoryCheckboxes">
+                            <!-- Categories will be loaded dynamically -->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editGameDescription">Mô tả</label>
+                        <textarea id="editGameDescription" name="description" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editGameUrl">URL game</label>
+                        <input type="url" id="editGameUrl" name="game_url">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-delete" id="deleteGameBtn" onclick="deleteFromEdit()" style="margin-right: auto;">
+                            <span>🗑️</span> Xóa game
+                        </button>
+                        <div>
+                            <button type="button" class="btn-cancel" onclick="closeEditModal()">
+                                Hủy
+                            </button>
+                            <button type="submit" class="btn-submit" id="submitEditBtn">
+                                <span>💾</span> Lưu thay đổi
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="deleteModal" style="display: none;">
+        <div class="modal modal-small">
+            <div class="modal-header">
+                <h2>Xác Nhận Xóa</h2>
+                <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="confirm-text">
+                    Bạn có chắc chắn muốn xóa game <strong id="deleteGameName"></strong>?
+                    <br>Hành động này không thể hoàn tác.
+                </p>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeDeleteModal()">
+                        Hủy
+                    </button>
+                    <button type="button" class="btn-delete" onclick="confirmDelete()">
+                        <span>🗑️</span> Xóa game
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-bottom">
+                <p>© 2024 Y8.COM - Chơi game trực tuyến miễn phí!</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="main.js"></script>
+<script>
+// ================= AUTH UI =================
+function updateHeaderActions() {
+    const headerActions = document.querySelector('.header-actions');
+    if (!headerActions) return;
+
+    if (API.Auth.isLoggedIn()) {
+        const user = API.Auth.getCurrentUser();
+        headerActions.innerHTML = `
+            <a href="profile.html" class="user-avatar-link">
+                <img src="${user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (user?.username || 'User')}" alt="Avatar" class="header-avatar">
+            </a>
+            <span class="username">${user?.username || 'User'}</span>
+            // <button class="btn-register" onclick="API.Auth.logout()">Đăng xuất</button>
+        `;
+    }
+}
+
+let myGames = [];
+let deleteGameId = null;
+let categories = [];
+
+// INIT
+document.addEventListener('DOMContentLoaded', () => {
+    updateHeaderActions();
+    if (!window.API.Auth.isLoggedIn()) {
+        window.location.href = 'login.html?redirect=my-games.html';
+        return;
+    }
+
+    loadCategories();
+    loadMyGames();
+    setupEventListeners();
+});
+
+// ================= LOAD DATA =================
+async function loadMyGames() {
+    try {
+        const result = await window.API.UserGames.getMyGames();
+
+        // FIX: lấy content từ pageable
+        myGames = result.content || [];
+
+        updateStats();
+        renderGamesTable();
+    } catch (error) {
+        console.error(error);
+        showToast('Không thể tải danh sách game', 'error');
+    }
+}
+
+// ================= STATS =================
+function updateStats() {
+    const total = myGames.length;
+
+    const active = myGames.filter(g => g.status === 'APPROVED').length;
+
+    const totalViews = myGames.reduce((sum, g) => sum + (g.views || 0), 0);
+
+    const avgRating = total > 0
+        ? (myGames.reduce((sum, g) => sum + (g.averageRating || 0), 0) / total).toFixed(1)
+        : 0;
+
+    document.getElementById('totalGames').textContent = total;
+    document.getElementById('activeGames').textContent = active;
+    document.getElementById('totalViews').textContent = formatNumber(totalViews);
+    document.getElementById('totalRating').textContent = avgRating;
+}
+
+// ================= TABLE =================
+function renderGamesTable() {
+    const tbody = document.getElementById('gamesTableBody');
+    const emptyState = document.getElementById('emptyState');
+    const table = document.getElementById('gamesTable');
+
+    if (myGames.length === 0) {
+        table.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+    }
+
+    table.style.display = 'table';
+    emptyState.style.display = 'none';
+
+    tbody.innerHTML = myGames.map(game => `
+        <tr>
+            <td>
+                <div class="game-info-cell">
+                    <img src="${game.thumbnail || 'placeholder.jpg'}" class="game-thumb-small">
+                    <div class="game-info-text">
+                        <span class="game-name">${game.title}</span>
+                        <a href="${game.gameUrl}" target="_blank" class="view-link">Xem →</a>
+                    </div>
+                </div>
+            </td>
+            <td>${game.category?.name || 'Chưa phân loại'}</td>
+            <td>${formatNumber(game.views || 0)}</td>
+            <td><span class="rating-badge">⭐ ${game.averageRating || '0.0'}</span></td>
+            <td>
+                <span class="status-badge ${game.status === 'APPROVED' ? 'active' : 'inactive'}">
+                    ${game.status === 'APPROVED' ? '🟢 Hoạt động' : '⚪ Ẩn'}
+                </span>
+            </td>
+            <td>${formatDate(game.createdAt)}</td>
+            <td>
+                <div class="action-buttons">
+                    <button onclick="openEditModal(${game.id})">✏️</button>
+                    <button onclick="openDeleteModal(${game.id})">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// ================= CATEGORY =================
+async function loadCategories() {
+    try {
+        const result = await window.API.Categories.getCategories();
+        categories = result || [];
+
+        const populateCheckboxes = (containerId) => {
+            const container = document.getElementById(containerId);
+            container.innerHTML = categories.map(c => `
+                <div class="checkbox-item">
+                    <input type="checkbox" name="categories" value="${c.id}" id="cat_${c.id}">
+                    <label for="cat_${c.id}">${c.name}</label>
+                </div>
+            `).join('');
+        };
+
+        populateCheckboxes('gameCategoryCheckboxes');
+        populateCheckboxes('editGameCategoryCheckboxes');
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// ================= UPLOAD =================
+async function handleUpload(e) {
+    e.preventDefault();
+
+    try {
+        // Validate at least one category is selected
+        const selectedCategories = document.querySelectorAll('#gameCategoryCheckboxes input[type="checkbox"]:checked');
+        if (selectedCategories.length === 0) {
+            showToast('Vui lòng chọn ít nhất 1 thể loại', 'error');
+            return;
+        }
+
+        const formData = new FormData(e.target);
+
+        await window.API.UserGames.uploadGameFile(formData);
+
+        showToast('Upload thành công', 'success');
+        closeUploadModal();
+        loadMyGames();
+        
+        // Reset form
+        e.target.reset();
+        // Uncheck all categories
+        document.querySelectorAll('#gameCategoryCheckboxes input[type="checkbox"]').forEach(cb => cb.checked = false);
+    } catch (err) {
+        console.error(err);
+        showToast('Upload thất bại: ' + err.message, 'error');
+    }
+}
+
+// ================= EDIT =================
+function openEditModal(id) {
+    const game = myGames.find(g => g.id === id);
+    if (!game) return;
+
+    document.getElementById('editGameId').value = game.id;
+    document.getElementById('editGameTitle').value = game.title;
+    document.getElementById('editGameDescription').value = game.description || '';
+    document.getElementById('editGameUrl').value = game.gameUrl || '';
+
+    // Uncheck all categories first
+    const checkboxes = document.querySelectorAll('#editGameCategoryCheckboxes input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = false);
+
+    // Check current categories
+    if (game.category) {
+        const categoryCheckbox = document.querySelector(`#editGameCategoryCheckboxes input[value="${game.category.id}"]`);
+        if (categoryCheckbox) {
+            categoryCheckbox.checked = true;
+        }
+    }
+
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+async function handleEdit(e) {
+    e.preventDefault();
+
+    try {
+        const id = parseInt(document.getElementById('editGameId').value);
+
+        // Get selected categories
+        const categoryCheckboxes = document.querySelectorAll('#editGameCategoryCheckboxes input[type="checkbox"]:checked');
+        const categoryIds = Array.from(categoryCheckboxes).map(cb => parseInt(cb.value));
+
+        if (categoryIds.length === 0) {
+            showToast('Vui lòng chọn ít nhất 1 thể loại', 'error');
+            return;
+        }
+
+        const data = {
+            title: document.getElementById('editGameTitle').value,
+            categoryIds: categoryIds,  // Send as array
+            description: document.getElementById('editGameDescription').value,
+            gameUrl: document.getElementById('editGameUrl').value
+        };
+
+        await window.API.UserGames.updateGame(id, data);
+
+        showToast('Cập nhật thành công', 'success');
+        closeEditModal();
+        loadMyGames();
+    } catch (e) {
+        console.error(e);
+        showToast('Lỗi update: ' + e.message, 'error');
+    }
+}
+
+// ================= DELETE =================
+function deleteFromEdit() {
+    const gameId = parseInt(document.getElementById('editGameId').value);
+    openDeleteModal(gameId);
+}
+
+function openDeleteModal(id) {
+    const game = myGames.find(g => g.id === id);
+    deleteGameId = id;
+
+    document.getElementById('deleteGameName').textContent = game.title;
+    document.getElementById('deleteModal').style.display = 'flex';
+}
+
+async function confirmDelete() {
+    try {
+        await window.API.UserGames.deleteGame(deleteGameId);
+
+        showToast('Đã xóa', 'success');
+        closeDeleteModal();
+        loadMyGames();
+    } catch {
+        showToast('Xóa lỗi', 'error');
+    }
+}
+
+// ================= UI =================
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+}
+function closeUploadModal() {
+    document.getElementById('uploadModal').style.display = 'none';
+}
+function closeDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+function showToast(msg, type = 'info') {
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+// ================= UTILS =================
+function formatNumber(num) {
+    return num.toLocaleString();
+}
+
+function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('vi-VN');
+}
+
+function setupEventListeners() {
+    document.getElementById('uploadGameForm')
+        .addEventListener('submit', handleUpload);
+
+    document.getElementById('editGameForm')
+        .addEventListener('submit', handleEdit);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="admin-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>⚙️ Admin</h2>
+        <ul>
+            <li onclick="showSection('dashboard')" class="active">📊 Dashboard</li>
+            <li onclick="showSection('approval')">✅ Duyệt Game</li>
+            <li onclick="showSection('games')">🎮 Quản Lý Games</li>
+            <li onclick="showSection('categories')">📁 Quản Lý Categories</li>
+            <li onclick="showSection('users')">👥 Quản Lý Users</li>
+        </ul>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- DASHBOARD SECTION -->
+        <section id="dashboard" class="section active">
+            <h1>📊 Dashboard</h1>
+            
+            <div class="stats-grid">
+                <div class="card">
+                    <h3 id="totalUsers">0</h3>
+                    <p>👤 Tổng Users</p>
+                </div>
+                <div class="card">
+                    <h3 id="totalGames">0</h3>
+                    <p>🎮 Tổng Games</p>
+                </div>
+                <div class="card">
+                    <h3 id="pendingGames">0</h3>
+                    <p>⏳ Chờ Duyệt</p>
+                </div>
+                <div class="card">
+                    <h3 id="approvedGames">0</h3>
+                    <p>✅ Đã Duyệt</p>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3>Biểu Đồ Game Status</h3>
+                    <canvas id="gameStatusChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3>Biểu Đồ Users</h3>
+                    <canvas id="userRoleChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAME APPROVAL SECTION -->
+        <section id="approval" class="section">
+            <h1>✅ Duyệt Game</h1>
+            
+            <div class="toolbar">
+                <button class="btn btn-refresh" onclick="loadPendingGames()">🔄 Làm Mới</button>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên Game</th>
+                        <th>Người Tải</th>
+                        <th>Status</th>
+                        <th>Ngày Tải</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingGamesTable"></tbody>
+            </table>
+        </section>
+
+        <!-- GAMES MANAGEMENT SECTION -->
+        <section id="games" class="section">
+            <h1>🎮 Quản Lý Games</h1>
+            
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="openCreateGameModal()">➕ Tạo Game Mới</button>
+                <button class="btn btn-refresh" onclick="loadAllGames()">🔄 Làm Mới</button>
+                <input type="text" id="gameSearch" placeholder="Tìm kiếm game..." oninput="searchGames()" class="search-input">
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên Game</th>
+                        <th>Category</th>
+                        <th>Người Tạo</th>
+                        <th>Status</th>
+                        <th>Lượt Xem</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="gamesTable"></tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button onclick="prevGamesPage()" class="btn btn-small">← Trước</button>
+                <span id="gamePageInfo">1 / 1</span>
+                <button onclick="nextGamesPage()" class="btn btn-small">Sau →</button>
+            </div>
+        </section>
+
+        <!-- CATEGORIES MANAGEMENT SECTION -->
+        <section id="categories" class="section">
+            <h1>📁 Quản Lý Categories</h1>
+            
+            <div class="toolbar">
+                <button class="btn btn-primary" onclick="openCreateCategoryModal()">➕ Tạo Category Mới</button>
+                <button class="btn btn-refresh" onclick="loadCategories()">🔄 Làm Mới</button>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên Category</th>
+                        <th>Số Games</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="categoriesTable"></tbody>
+            </table>
+        </section>
+
+        <!-- USERS MANAGEMENT SECTION -->
+        <section id="users" class="section">
+            <h1>👥 Quản Lý Users</h1>
+            
+            <div class="toolbar">
+                <button class="btn btn-refresh" onclick="loadUsers()">🔄 Làm Mới</button>
+                <input type="text" id="userSearch" placeholder="Tìm kiếm username..." oninput="searchUsers()" class="search-input">
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Ban Status</th>
+                        <th>Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTable"></tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                <button onclick="prevUsersPage()" class="btn btn-small">← Trước</button>
+                <span id="userPageInfo">1 / 1</span>
+                <button onclick="nextUsersPage()" class="btn btn-small">Sau →</button>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+<!-- MODALS -->
+
+<!-- Create/Edit Game Modal -->
+<div id="gameModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeGameModal()">&times;</span>
+        <h2 id="gameModalTitle">Tạo Game Mới</h2>
+        <form onsubmit="saveGame(event)">
+            <input type="hidden" id="gameId">
+            
+            <div class="form-group">
+                <label>Tên Game</label>
+                <input type="text" id="gameTitle" required>
+            </div>
+
+            <div class="form-group">
+                <label>Mô Tả</label>
+                <textarea id="gameDescription" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Category</label>
+                <select id="gameCategory" required></select>
+            </div>
+
+            <div class="form-group">
+                <label>Game URL</label>
+                <input type="text" id="gameUrl" required>
+            </div>
+
+            <div class="form-group">
+                <label>Thumbnail URL</label>
+                <input type="text" id="gameThumbnail">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Lưu</button>
+                <button type="button" class="btn btn-secondary" onclick="closeGameModal()">❌ Đóng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Create/Edit Category Modal -->
+<div id="categoryModal" class="modal">
+    <div class="modal-content">
+        <span class="modal-close" onclick="closeCategoryModal()">&times;</span>
+        <h2 id="categoryModalTitle">Tạo Category Mới</h2>
+        <form onsubmit="saveCategory(event)">
+            <input type="hidden" id="categoryId">
+            
+            <div class="form-group">
+                <label>Tên Category</label>
+                <input type="text" id="categoryName" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Lưu</button>
+                <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">❌ Đóng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Confirm Dialog -->
+<div id="confirmDialog" class="modal">
+    <div class="modal-content modal-small">
+        <h2 id="confirmTitle">Xác Nhận</h2>
+        <p id="confirmMessage"></p>
+        <div class="form-actions">
+            <button id="confirmBtn" class="btn btn-danger">Xác Nhận</button>
+            <button onclick="closeConfirmDialog()" class="btn btn-secondary">Hủy</button>
+        </div>
+    </div>
+</div>
+
+<script src="../api.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
