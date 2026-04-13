@@ -120,6 +120,20 @@ const AuthAPI = {
     }
 };
 
+// ==================== CATEGORIES API ====================
+
+const CategoriesAPI = {
+    // Lấy danh sách categories
+    async getCategories() {
+        return apiCall('/categories');
+    },
+
+    // Lấy chi tiết category
+    async getCategoryById(categoryId) {
+        return apiCall(`/categories/${categoryId}`);
+    }
+};
+
 const AdminAPI = {
     // DASHBOARD
     getDashboard() {
@@ -155,7 +169,8 @@ const AdminAPI = {
 window.API = {
     Auth: AuthAPI,
     Admin: AdminAPI,
-    baseUrl: API_BASE_URL
+    baseUrl: API_BASE_URL,
+    Categories: CategoriesAPI,
 };
 
 console.log('API loaded', window.API);

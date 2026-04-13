@@ -175,6 +175,94 @@ function requireAuth() {
     return true;
 }
 
+// ==================== GAMES ====================
+
+// Create game card HTML
+function createGameCard(game) {
+    const isFavorite = game.is_favorite || false;
+    
+    return `
+        <div class="game-card ${game.featured ? 'featured' : ''}" data-game-id="${game.id}">
+            <div class="game-thumb">
+                <img src="${game.thumbnail || 'placeholder.jpg'}" alt="${game.title}" class="game-image">
+                <div class="game-overlay">
+                    <button class="play-btn" onclick="navigateToGame(${game.id})">Chơi ngay</button>
+                </div>
+                ${game.featured ? '<span class="badge featured-badge">Nổi bật</span>' : ''}
+                ${game.is_new ? '<span class="badge new-badge">Mới</span>' : ''}
+                ${window.API.Auth.isLoggedIn() ? `
+                    <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                            onclick="toggleFavorite(event, ${game.id})"
+                            title="${isFavorite ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}">
+                        ❤️
+                    </button>
+                ` : ''}
+            </div>
+            <div class="game-info">
+                <h3 class="game-title" onclick="navigateToGame(${game.id})">${game.title}</h3>
+                <div class="game-meta">
+                    <span class="rating">⭐ ${game.rating || '4.5'}</span>
+                    <span class="plays">👁 ${formatNumber(game.views || 0)}</span>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Load games to container
+async function loadGames(container, fetchFunction, params = {}) {
+    showLoading(container);
+    
+    try {
+        const result = await fetchFunction(params);
+        const games = result.data || result.games || result;
+        
+        if (games.length === 0) {
+            container.innerHTML = '<div class="no-games">Không có game nào</div>';
+            return;
+        }
+        
+        container.innerHTML = games.map(game => createGameCard(game)).join('');
+    } catch (error) {
+        showError(container, 'Không thể tải danh sách game');
+    }
+}
+
+// Toggle favorite
+async function toggleFavorite(event, gameId) {
+    event.stopPropagation();
+    
+    if (!window.API.Auth.isLoggedIn()) {
+        window.location.href = 'login.html?redirect=' + window.location.pathname.split('/').pop();
+        return;
+    }
+    
+    const btn = event.target.closest('.favorite-btn');
+    const isFavorite = btn.classList.contains('active');
+    
+    try {
+        if (isFavorite) {
+            await window.API.Favorites.removeFavorite(gameId);
+            btn.classList.remove('active');
+            btn.title = 'Thêm vào yêu thích';
+        } else {
+            await window.API.Favorites.toggleFavorite(gameId);
+            btn.classList.add('active');
+            btn.title = 'Xóa khỏi yêu thích';
+        }
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+        alert('Không thể cập nhật yêu thích. Vui lòng thử lại.');
+    }
+}
+
+// Search games
+async function searchGames(query) {
+    if (!query.trim()) return;
+    
+    window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+}
+
 // ==================== PROFILE ====================
 
 // Load profile data
