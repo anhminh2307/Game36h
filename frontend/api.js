@@ -134,11 +134,252 @@ const CategoriesAPI = {
     }
 };
 
+// ==================== GAMES API ====================
+
+const GamesAPI = {
+    // Lấy danh sách game
+    async getGames(params = {}) {
+        const queryString = new URLSearchParams(params).toString();
+        const endpoint = queryString ? `/games?${queryString}` : '/games';
+        return apiCall(endpoint);
+    },
+
+    // Lấy chi tiết game
+    async getGameById(gameId) {
+        return apiCall(`/games/${gameId}`);
+    },
+
+    // Lấy game theo category
+    async getGamesByCategory(categoryId) {
+        return apiCall(`/games?category=${categoryId}`);
+    },
+
+    // Tìm kiếm game
+    async searchGames(query, category = null, sort = null, page = 1, limit = 12) {
+        const params = { q: query };
+        if (category) params.category = category;
+        if (sort) params.sort = sort;
+        params.page = page - 1; // Spring page starts at 0
+        params.limit = limit;
+        return this.getGames(params);
+    },
+
+    // Lấy game mới nhất
+    async getNewGames(limit = 8) {
+        return apiCall(`/games/new?limit=${limit}`);
+    },
+
+    // Lấy game được chơi nhiều nhất
+    async getPopularGames(limit = 8) {
+        return apiCall(`/games/popular?limit=${limit}`);
+    },
+
+    // Lấy game nổi bật
+    async getFeaturedGames(limit = 4) {
+        return apiCall(`/games/featured?limit=${limit}`);
+    },
+
+    // Tăng lượt xem game
+    async incrementViews(gameId) {
+        return apiCall(`/games/${gameId}/play`, 'POST');
+    }
+};
+
+// ==================== FAVORITES API ====================
+
+const FavoritesAPI = {
+
+    // Thêm vào yêu thích / Toggle favorite
+    async toggleFavorite(gameId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/favorites/${gameId}`, 'POST', null, token);
+    },
+
+    // Xóa khỏi yêu thích
+    async removeFavorite(gameId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/favorites/${gameId}`, 'DELETE', null, token);
+    },
+
+    // Xóa favorite theo ID
+    async removeFavoriteById(favoriteId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/favorites/by-id/${favoriteId}`, 'DELETE', null, token);
+    },
+
+    // Lấy favorite theo ID
+    async getFavoriteById(favoriteId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/favorites/by-id/${favoriteId}`, 'GET', null, token);
+    },
+
+    // Lấy danh sách yêu thích của user hiện tại
+    async getFavorites(page = 0, size = 100) {
+        const token = AuthAPI.getToken();
+        const user = AuthAPI.getCurrentUser();
+        if (!user) return [];
+        return apiCall(`/favorites/user/${user.id}?page=${page}&size=${size}`, 'GET', null, token);
+    },
+
+    // Lấy danh sách yêu thích của user theo userId
+    async getUserFavorites(userId, page = 0, size = 10) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/favorites/user/${userId}?page=${page}&size=${size}`, 'GET', null, token);
+    }
+};
+
+// ==================== HISTORY API ====================
+
+const HistoryAPI = {
+    // Lấy lịch sử chơi của user hiện tại
+
+    // Thêm vào lịch sử
+    async addToHistory(gameId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/history/${gameId}`, 'POST', null, token);
+    },
+
+    // Lấy lịch sử theo ID
+    async getHistoryById(historyId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/history/by-id/${historyId}`, 'GET', null, token);
+    },
+
+    // Xóa khỏi lịch sử theo ID
+    async removeFromHistory(historyId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/history/by-id/${historyId}`, 'DELETE', null, token);
+    },
+
+    // Lấy lịch sử của user theo userId
+    async getUserHistory(userId, page = 0, size = 10) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/history/user/${userId}?page=${page}&size=${size}`, 'GET', null, token);
+    }
+};
+
+// ==================== USER GAMES API (Game Management) ====================
+
+const UserGamesAPI = {
+    // Lấy danh sách game của user hiện tại
+    async getMyGames() {
+        const token = AuthAPI.getToken();
+        const user = AuthAPI.getCurrentUser();
+        return apiCall(`/games/user/${user.id}`, 'GET', null, token);
+    },
+
+    // Upload game mới
+    async uploadGame(gameData) {
+        // gameData: { title, description, categoryId, gameUrl, thumbnail }
+        // Convert snake_case to camelCase for backend
+        const data = {
+            title: gameData.title,
+            description: gameData.description,
+            categoryId: gameData.category_id,
+            gameUrl: gameData.game_url,
+            thumbnail: gameData.thumbnail
+        };
+        const token = AuthAPI.getToken();
+        return apiCall('/games', 'POST', data, token);
+    },
+
+    // Upload file game (multipart/form-data)
+    async uploadGameFile(formData) {
+        const token = AuthAPI.getToken();
+        const url = `${API_BASE_URL}/games/upload`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || 'Upload failed');
+        }
+        return result;
+    },
+
+    // Cập nhật thông tin game
+    async updateGame(gameId, gameData) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/games/${gameId}`, 'PUT', gameData, token);
+    },
+
+    // Xóa game
+    async deleteGame(gameId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/games/${gameId}`, 'DELETE', null, token);
+    },
+
+    // Đổi trạng thái game (active/inactive)
+    async toggleGameStatus(gameId, isActive) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/games/${gameId}/status`, 'PUT', { is_active: isActive }, token);
+    },
+
+    // Lấy trạng thái chơi game
+    async getPlayStatus() {
+        const token = AuthAPI.getToken();
+        return apiCall('/users/me/play-status', 'GET', null, token);
+    },
+
+    // Bắt đầu chơi game
+    async startPlay(gameId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/games/${gameId}/play`, 'POST', null, token);
+    },
+
+    // Cập nhật thời gian chơi
+    async updatePlayTime(minutesPlayed) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/users/me/update-play-time?minutesPlayed=${minutesPlayed}`, 'POST', null, token);
+    }
+};
+
 const AdminAPI = {
     // DASHBOARD
     getDashboard() {
         return apiCall('/admin/dashboard', 'GET', null, AuthAPI.getToken());
     },
+
+    // CATEGORIES CRUD  
+    getCategories() {
+        return apiCall('/categories', 'GET', null, AuthAPI.getToken());
+    },
+
+    createCategory(data) {
+        return apiCall('/categories', 'POST', data, AuthAPI.getToken());
+    },
+
+    updateCategory(id, data) {
+        return apiCall(`/categories/${id}`, 'PUT', data, AuthAPI.getToken());
+    },
+
+    deleteCategory(id) {
+        return apiCall(`/categories/${id}`, 'DELETE', null, AuthAPI.getToken());
+    },
+
+    // GAMES MANAGEMENT
+    getAllGames(page = 0, size = 10) {
+        return apiCall(`/admin/games?page=${page}&size=${size}`, 'GET', null, AuthAPI.getToken());
+    },
+
+    createGame(data) {
+        return apiCall('/games', 'POST', data, AuthAPI.getToken());
+    },
+
+    updateGame(id, data) {
+        return apiCall(`/games/${id}`, 'PUT', data, AuthAPI.getToken());
+    },
+
+    deleteGame(id) {
+        return apiCall(`/games/${id}`, 'DELETE', null, AuthAPI.getToken());
+    },
+
     // USERS MANAGEMENT
     getUsers(page = 0, size = 10) {
         return apiCall(`/admin/users?page=${page}&size=${size}`, 'GET', null, AuthAPI.getToken());
@@ -171,6 +412,10 @@ window.API = {
     Admin: AdminAPI,
     baseUrl: API_BASE_URL,
     Categories: CategoriesAPI,
+    Games: GamesAPI,
+    Favorites: FavoritesAPI,
+    History: HistoryAPI,
+    UserGames: UserGamesAPI
 };
 
 console.log('API loaded', window.API);

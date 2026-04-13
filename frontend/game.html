@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết Game - Game36h</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="game-detail.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-y">Game</span>
+                    <span class="logo-8">36</span>
+                    <span class="logo-com">h</span>
+                </a>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm game...">
+                <button class="search-btn" onclick="performSearch()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="header-actions">
+                <a href="login.html" class="btn-login">Đăng nhập</a>
+                <a href="register.html" class="btn-register">Đăng ký</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Play Timer Widget -->
+    <div id="playTimerWidget" class="play-timer-widget" style="display: none;">
+        <div class="timer-content">
+            <div class="timer-icon">⏱️</div>
+            <div class="timer-text">
+                <div class="timer-label">Thời gian chơi hôm nay</div>
+                <div class="timer-value" id="playTimeDisplay">00:00</div>
+                <div class="timer-remaining" id="remainingTimeDisplay">Còn 180 phút</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Detail Content -->
+    <main class="main-content">
+        <div class="game-detail-container">
+            <!-- Game Player Section -->
+            <section class="game-player-section">
+                <div class="game-frame">
+                    <iframe 
+                        id="gameIframe"
+                        src="" 
+                        width="100%" 
+                        height="100%" 
+                        scrolling="none" 
+                        frameborder="0" 
+                        allowfullscreen
+                        style="display: none; width: 100%; height: 100%;">
+                    </iframe>
+                    <div class="game-placeholder" id="gamePlaceholder">
+                        <div class="play-overlay">
+                            <button class="big-play-btn">▶ CHƠI NGAY</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="game-controls">
+                    <button class="control-btn favorite" id="favoriteBtn">
+                        <span>❤️</span> Yêu thích
+                    </button>
+                    <button class="control-btn share" onclick="shareGame()">
+                        <span>🔗</span> Chia sẻ
+                    </button>
+                    <button class="control-btn fullscreen" id="fullscreenBtn" onclick="toggleFullscreen()">
+                        <span>⛶</span> Toàn màn hình
+                    </button>
+                </div>
+            </section>
+
+            <!-- Game Info Section -->
+            <section class="game-info-section">
+                <div class="game-info-header">
+                    <div class="game-title-area">
+                        <h1 id="gameTitle">Game Title</h1>
+                        <div class="game-meta-info">
+                            <span class="category-tag">Thể loại</span>
+                        </div>
+                    </div>
+                    <div class="game-stats">
+                        <div class="stat-item">
+                            <span class="stat-value" id="gameViews">0</span>
+                            <span class="stat-label">Lượt chơi</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="gameRating">0</span>
+                            <span class="stat-label">Đánh giá</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-description">
+                    <h2>Mô tả</h2>
+                    <p id="gameDescription">Đang tải thông tin game...</p>
+                </div>
+
+                <!-- Rating Section -->
+                <div class="rating-section">
+                    <h2>Đánh giá của bạn</h2>
+                    <div class="star-rating" id="starRating">
+                        <span class="star" data-value="1">⭐</span>
+                        <span class="star" data-value="2">⭐</span>
+                        <span class="star" data-value="3">⭐</span>
+                        <span class="star" data-value="4">⭐</span>
+                        <span class="star" data-value="5">⭐</span>
+                    </div>
+                    <p class="rating-text">Chọn số sao để đánh giá</p>
+                </div>
+            </section>
+
+            <!-- Comments Section -->
+            <section class="comments-section">
+                <h2>Bình luận</h2>
+                
+                <div class="comment-form" id="commentFormContainer" style="display: none;">
+                    <textarea placeholder="Viết bình luận..." id="commentInput"></textarea>
+                    <button class="btn-submit-comment" onclick="submitComment()">Gửi</button>
+                </div>
+
+                <div class="comments-list" id="commentsList">
+                    <p>Chưa có bình luận nào</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+<!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-logo">
+                    <span style="color: #4CAF50;">Game</span>
+                    <span>36</span>
+                    <span style="color: #4CAF50;">h</span>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">Discord</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Về Game36h</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="guide.html">Hướng dẫn</a></li>
+                        <li><a href="support.html">Hỗ trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Chính Sách</h4>
+                    <ul>
+                        <li><a href="terms.html">Điều khoản sử dụng</a></li>
+                        <li><a href="privacy.html">Chính sách bảo mật</a></li>
+                        <li><a href="contact.html">Liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Game36h. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script>
+        // ================= PAGE INIT =================
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.API) {
+                console.error('API not loaded');
+                return;
+            }
+            const urlParams = new URLSearchParams(window.location.search);
+            const gameId = urlParams.get('id');
+
+            if (gameId) {
+                loadGameDetail(gameId);
+                updateHeaderActions();
+                initPlayTimer();
+            } else {
+                alert('Game không tìm thấy');
+                window.location.href = 'index.html';
+            }
+        });
+
+        // ================= GAME DETAIL =================
+        async function loadGameDetail(gameId) {
+            try {
+                const game = await window.API.Games.getGameById(gameId);
+                if (!game) {
+                    alert('Không tìm thấy game');
+                    window.location.href = 'index.html';
+                    return;
+                }
+
+                // Update page title
+                document.title = `${game.title} - Game36h`;
+
+                // Update game info
+                document.getElementById('gameTitle').textContent = game.title || 'Game';
+                document.querySelector('.category-tag').textContent = game.category?.name || 'Game';
+                document.getElementById('gameViews').textContent = formatNumber(game.views || 0);
+                document.getElementById('gameRating').textContent = (game.averageRating || 0).toFixed(1);
+                document.getElementById('gameDescription').textContent = game.description || 'Không có mô tả';
+
+                // Set iframe
+                const iframe = document.getElementById('gameIframe');
+                if (iframe && game.gameUrl) {
+                    iframe.src = game.gameUrl;
+                }
+
+                // Setup play button
+                const bigPlayBtn = document.querySelector('.big-play-btn');
+                if (bigPlayBtn) {
+                    bigPlayBtn.onclick = () => startPlaying(gameId);
+                }
+
+                // Setup favorite button
+                const favBtn = document.getElementById('favoriteBtn');
+                if (window.API.Auth.isLoggedIn()) {
+                    document.getElementById('commentFormContainer').style.display = 'block';
+                    
+                    // Load favorite status
+                    try {
+                        const favoritesResponse = await window.API.Favorites.getFavorites(); 
+                        const gameIdNum = parseInt(gameId);
+                        
+                        // Handle both Page object and array response
+                        const favorites = favoritesResponse.content || favoritesResponse;
+                        const isFavorited = favorites && Array.isArray(favorites) && favorites.some(f => {
+                            const fGameId = typeof f.gameId === 'string' ? parseInt(f.gameId) : f.gameId;
+                            return fGameId === gameIdNum;
+                        });
+                        
+                        if (isFavorited) {
+                            favBtn.classList.add('active');
+                            favBtn.innerHTML = '<span>❤️</span> Đã thích';
+                        }
+                        console.log('Favorite status loaded:', isFavorited, 'GameId:', gameIdNum, 'Favorites:', favorites);
+                    } catch (err) {
+                        console.error('Error loading favorite status:', err);
+                    }
+                    
+                    // Setup click handlers
+                    favBtn.onclick = () => toggleFavorite(gameId);
+                    
+                    // Setup comment submit button
+                    const commentBtn = document.querySelector('.btn-submit-comment');
+                    if (commentBtn) {
+                        commentBtn.onclick = () => submitComment(gameId);
+                    }
+                }
+
+                // Increment views
+                try {
+                    await window.API.Games.incrementViews(gameId);
+                } catch (err) {
+                    console.error('Error incrementing views:', err);
+                }
+
+                // Load comments if available
+                try {
+                    const commentsResponse = await window.API.Comments.getComments(gameId);
+                    const comments = commentsResponse.content || commentsResponse;
+                    if (comments && comments.length > 0) {
+                        renderComments(comments);
+                    }
+                } catch (err) {
+                    console.error('Error loading comments:', err);
+                }
+
+                // Load user rating if logged in
+                if (window.API.Auth.isLoggedIn()) {
+                    try {
+                        const ratings = await window.API.Ratings.getGameRatings(gameId);
+                        const user = window.API.Auth.getCurrentUser();
+                        const userRating = ratings.ratings.find(r => r.user.id === user.id);
+                        if (userRating) {
+                            setUserRating(userRating.score);
+                        }
+                    } catch (err) {
+                        console.error('Error loading user rating:', err);
+                    }
+                }
+                
+
+            } catch (error) {
+                console.error('Error loading game detail:', error);
+                alert('Không thể tải thông tin game');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // ================= RATING =================
+        document.addEventListener('DOMContentLoaded', () => {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const value = this.dataset.value;
+                    const gameId = new URLSearchParams(window.location.search).get('id');
+                    
+                    if (!window.API.Auth.isLoggedIn()) {
+                        window.location.href = `login.html?redirect=game.html?id=${gameId}`;
+                        return;
+                    }
+                    
+                    stars.forEach((s, index) => {
+                        if (index < value) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                    document.querySelector('.rating-text').textContent = `Bạn đã đánh giá ${value} sao`;
+                    
+                    submitRating(gameId, parseInt(value));
+                });
+            });
+        });
+
+        // ================= FAVORITE =================
+        async function toggleFavorite(gameId) {
+            const favBtn = document.getElementById('favoriteBtn');
+            const isActive = favBtn.classList.contains('active');
+            try {
+                if (isActive) {
+                    // Nếu đang active -> Bấm vào để xóa
+                    await window.API.Favorites.removeFavorite(gameId);
+                    favBtn.classList.remove('active');
+                    favBtn.innerHTML = '<span>🤍</span> Yêu thích';
+                    showSuccess('Đã xóa khỏi danh sách yêu thích');
+                } else {
+                    // Nếu chưa active -> Bấm vào để thêm
+                    await window.API.Favorites.toggleFavorite(gameId); 
+                    favBtn.classList.add('active');
+                    favBtn.innerHTML = '<span>❤️</span> Đã thích';
+                    showSuccess('Đã thêm vào yêu thích!');
+                        }
+            } catch (err) {
+                console.error('Error toggling favorite:', err);
+                alert('Vui lòng đăng nhập để thêm yêu thích');
+            }
+        }
+
+        // ================= COMMENTS =================
+        async function submitComment(gameId) {
+            const content = document.getElementById('commentInput').value.trim();
+
+            if (!content) {
+                alert('Vui lòng nhập nội dung bình luận');
+                return;
+            }
+
+            try {
+                console.log('Submitting comment:', { gameId, content });
+                await window.API.Comments.addComment(gameId, content);
+                document.getElementById('commentInput').value = '';
+                showSuccess('Bình luận đã được gửi!');
+                
+                // Reload comments
+                const commentsResponse = await window.API.Comments.getComments(gameId);
+                renderComments(commentsResponse.content || commentsResponse);
+            } catch (err) {
+                console.error('Error submitting comment:', err);
+                showError('Lỗi khi gửi bình luận: ' + err.message);
+            }
+        }
+
+        async function submitRating(gameId, score) {
+            try {
+                await window.API.Ratings.rateGame(gameId, score);
+                setUserRating(score);
+                showSuccess(`Bạn đã đánh giá game này ${score} sao`);
+            } catch (err) {
+                console.error('Error submitting rating:', err);
+                showError('Không thể lưu đánh giá. Bạn có thể đã đánh giá game này rồi.');
+            }
+        }
+
+        function setUserRating(score) {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < score) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            document.querySelector('.rating-text').textContent = `Bạn đã đánh giá ${score} sao`;
+        }
+
+        function renderComments(comments) {
+            const container = document.getElementById('commentsList');
+            if (!container) return;
+            
+            // Ensure comments is an array
+            let commentArray = [];
+            if (Array.isArray(comments)) {
+                commentArray = comments;
+            } else if (comments && comments.content) {
+                commentArray = comments.content;
+            }
+            
+            if (!commentArray || commentArray.length === 0) {
+                container.innerHTML = '<p>Chưa có bình luận nào</p>';
+                return;
+            }
+            
+            container.innerHTML = commentArray.map(comment => `
+                <div class="comment-item" data-comment-id="${comment.id}">
+                    <div class="comment-avatar">
+                        <img src="${comment.user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (comment.user?.username || 'User')}" alt="Avatar">
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-author">${comment.user?.username || 'Anonymous'}</span>
+                            <span class="comment-time">${formatDate(comment.createdAt)}</span>
+                        </div>
+                        <p class="comment-text">${comment.content}</p>
+                        
+                        <!-- Reply Form -->
+                        <div class="reply-form" id="reply-form-${comment.id}" style="display: none;">
+                            <textarea class="reply-input" placeholder="Viết trả lời..." id="reply-input-${comment.id}"></textarea>
+                            <div class="reply-actions">
+                                <button class="btn-cancel-reply" onclick="toggleReplyForm(${comment.id})">Bỏ</button>
+                                <button class="btn-submit-reply" onclick="submitReply(${comment.id})">Gửi</button>
+                            </div>
+                        </div>
+
+                        <!-- Replies List -->
+                        <div class="replies-list" id="replies-${comment.id}">
+                            ${comment.replies && comment.replies.length > 0 ? comment.replies.map(reply => `
+                                <div class="reply-item">
+                                    <div class="reply-avatar">
+                                        <img src="${reply.user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (reply.user?.username || 'User')}" alt="Avatar">
+                                    </div>
+                                    <div class="reply-content">
+                                        <div class="reply-header">
+                                            <span class="reply-author">${reply.user?.username || 'Anonymous'}</span>
+                                            <span class="reply-time">${formatDate(reply.createdAt)}</span>
+                                        </div>
+                                        <p class="reply-text">${reply.content}</p>
+                                    </div>
+                                </div>
+                            `).join('') : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleReplyForm(commentId) {
+            const form = document.getElementById(`reply-form-${commentId}`);
+            if (form) {
+                form.style.display = form.style.display === 'none' ? 'block' : 'none';
+                if (form.style.display === 'block') {
+                    document.getElementById(`reply-input-${commentId}`).focus();
+                }
+            }
+        }
+
+        async function submitReply(commentId) {
+            const input = document.getElementById(`reply-input-${commentId}`);
+            const content = input.value.trim();
+
+            if (!content) {
+                alert('Vui lòng nhập nội dung trả lời');
+                return;
+            }
+
+            if (!window.API.Auth.isLoggedIn()) {
+                window.location.href = 'login.html?redirect=' + window.location.href;
+                return;
+            }
+
+            try {
+                await window.API.Comments.addReply(commentId, content);
+                input.value = '';
+                toggleReplyForm(commentId);
+                
+                // Reload comments to show new reply
+                const gameId = new URLSearchParams(window.location.search).get('id');
+                const commentsResponse = await window.API.Comments.getComments(gameId);
+                renderComments(commentsResponse.content || commentsResponse);
+                
+                showSuccess('Trả lời đã được gửi!');
+            } catch (err) {
+                console.error('Error submitting reply:', err);
+                showError('Lỗi gửi trả lời: ' + err.message);
+            }
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diff = (now - date) / 1000;
+
+            if (diff < 60) return 'Vừa xong';
+            if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+            if (diff < 604800) return `${Math.floor(diff / 86400)} ngày trước`;
+            
+            return date.toLocaleDateString('vi-VN', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+        }
+
+        // ================= UI HELPERS =================
+        function updateHeaderActions() {
+            const headerActions = document.querySelector('.header-actions');
+            if (!headerActions) return;
+
+            if (window.API.Auth.isLoggedIn()) {
+                const user = window.API.Auth.getCurrentUser();
+                const adminBtn = user?.role === 'ADMIN' ? '<a href="admin/admin.html" class="btn-register">⚙️ Admin Dashboard</a>' : '';
+                headerActions.innerHTML = `
+                    <div class="header-actions logged-in" id="headerActions">
+                        ${adminBtn}
+                        <div class="user-dropdown">
+                            <span class="username" id="username">Người dùng</span>
+                            <div class="dropdown-menu">
+                                <a href="profile.html">Thông tin cá nhân</a>
+                                <a href="support.html">Hỗ trợ</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function performSearch() {
+            const keyword = document.getElementById("searchInput").value.trim();
+            if (keyword) {
+                window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
+            }
+        }
+
+        function shareGame() {
+            const gameId = new URLSearchParams(window.location.search).get('id');
+            const gameTitle = document.getElementById('gameTitle').textContent;
+            const shareUrl = `${window.location.origin}${window.location.pathname}?id=${gameId}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showSuccess(`Đã sao chép link: ${shareUrl}`);
+            }).catch(() => {
+                // Fallback for browsers that don't support async clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = shareUrl;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccess(`Đã sao chép link: ${shareUrl}`);
+            });
+        }
+
+        function showSuccess(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast success';
+            toast.innerHTML = `✅ ${message}`;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        function showError(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast error';
+            toast.innerHTML = `❌ ${message}`;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #f44336 0%, #da190b 100%);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+            `;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        function toggleFullscreen() {
+            const gameFrame = document.querySelector('.game-frame');
+            const btn = document.getElementById('fullscreenBtn');
+            
+            if (!document.fullscreenElement) {
+                if (gameFrame.requestFullscreen) gameFrame.requestFullscreen();
+                else if (gameFrame.webkitRequestFullscreen) gameFrame.webkitRequestFullscreen();
+                
+                btn.innerHTML = '<span>⛶</span> Thoát toàn màn hình';
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                btn.innerHTML = '<span>⛶</span> Toàn màn hình';
+            }
+        }
+
+        // ================= UTILITY =================
+        function formatNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            } else if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // ================= PLAY TIMER =================
+        let playTimerInterval = null;
+        let playStartTime = null;
+        let currentPlayTime = 0;
+
+        async function initPlayTimer() {
+            if (!window.API.Auth.isLoggedIn()) {
+                return;
+            }
+
+            try {
+                const status = await window.API.UserGames.getPlayStatus();
+                updateTimerDisplay(status);
+                
+                if (status.isLocked) {
+                    disablePlayButton(status.message);
+                }
+            } catch (err) {
+                console.error('Error loading play status:', err);
+            }
+        }
+
+        async function startPlaying(gameId) {
+            if (!window.API.Auth.isLoggedIn()) {
+                window.location.href = `login.html?redirect=game.html?id=${gameId}`;
+                return;
+            }
+
+            try {
+                // Check play status first
+                const status = await window.API.UserGames.getPlayStatus();
+                if (status.isLocked || status.playTimeToday >= 180) {
+                    alert(status.message || 'Bạn đã chơi quá 180 phút, bạn hãy đợi 2 tiếng nữa để được chơi tiếp');
+                    disablePlayButton(status.message);
+                    return;
+                }
+
+                // Start play
+                await window.API.UserGames.startPlay(gameId);
+                
+                // Show game
+                document.getElementById('gamePlaceholder').style.display = 'none';
+                document.getElementById('gameIframe').style.display = 'block';
+                
+                // Start timer
+                playStartTime = Date.now();
+                currentPlayTime = status.playTimeToday;
+                startPlayTimer();
+                
+                // Show timer widget
+                document.getElementById('playTimerWidget').style.display = 'block';
+                
+            } catch (err) {
+                console.error('Error starting play:', err);
+                alert('Không thể bắt đầu chơi game. Vui lòng thử lại.');
+            }
+        }
+
+        function startPlayTimer() {
+            if (playTimerInterval) {
+                clearInterval(playTimerInterval);
+            }
+            
+            playTimerInterval = setInterval(async () => {
+                const elapsedMinutes = Math.floor((Date.now() - playStartTime) / 60000);
+                const totalMinutes = currentPlayTime + elapsedMinutes;
+                
+                updateTimerDisplayValue(totalMinutes);
+                
+                // Update backend every 5 minutes
+                if (elapsedMinutes > 0 && elapsedMinutes % 5 === 0) {
+                    try {
+                        await window.API.UserGames.updatePlayTime(elapsedMinutes);
+                        // Refresh status
+                        const status = await window.API.UserGames.getPlayStatus();
+                        if (status.isLocked) {
+                            stopPlayTimer();
+                            disablePlayButton(status.message);
+                            alert(status.message);
+                        }
+                    } catch (err) {
+                        console.error('Error updating play time:', err);
+                    }
+                }
+                
+                // Check if reached limit
+                if (totalMinutes >= 180) {
+                    stopPlayTimer();
+                    disablePlayButton('Bạn đã chơi quá 180 phút, bạn hãy đợi 2 tiếng nữa để được chơi tiếp');
+                    alert('Bạn đã chơi quá 180 phút, bạn hãy đợi 2 tiếng nữa để được chơi tiếp');
+                }
+            }, 1000); // Update every second
+        }
+
+        function stopPlayTimer() {
+            if (playTimerInterval) {
+                clearInterval(playTimerInterval);
+                playTimerInterval = null;
+            }
+        }
+
+        function updateTimerDisplay(status) {
+            currentPlayTime = status.playTimeToday || 0;
+            updateTimerDisplayValue(currentPlayTime);
+            
+            if (!status.isLocked && currentPlayTime < 180) {
+                document.getElementById('playTimerWidget').style.display = 'block';
+            }
+        }
+
+        function updateTimerDisplayValue(minutes) {
+            const hours = Math.floor(minutes / 60);
+            const mins = minutes % 60;
+            document.getElementById('playTimeDisplay').textContent = 
+                `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}`;
+            
+            const remaining = Math.max(0, 180 - minutes);
+            document.getElementById('remainingTimeDisplay').textContent = `Còn ${remaining} phút`;
+        }
+
+        function disablePlayButton(message) {
+            const bigPlayBtn = document.querySelector('.big-play-btn');
+            if (bigPlayBtn) {
+                bigPlayBtn.disabled = true;
+                bigPlayBtn.style.opacity = '0.5';
+                bigPlayBtn.style.cursor = 'not-allowed';
+                bigPlayBtn.textContent = 'KHÔNG THỂ CHƠI';
+                bigPlayBtn.title = message;
+            }
+        }
+
+        // Stop timer when page unloads
+        window.addEventListener('beforeunload', () => {
+            stopPlayTimer();
+        });
+    </script>
+</body>
+</html>
