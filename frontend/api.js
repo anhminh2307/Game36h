@@ -403,7 +403,24 @@ const AdminAPI = {
 
     deleteUser(id) {
         return apiCall(`/admin/users/${id}`, 'DELETE', null, AuthAPI.getToken());
-    }
+    },
+
+    // GAMES MANAGEMENT
+    getAllGames(page = 0, size = 10) {
+        return apiCall(`/admin/games?page=${page}&size=${size}`, 'GET', null, AuthAPI.getToken());
+    },
+
+    createGame(data) {
+        return apiCall('/games', 'POST', data, AuthAPI.getToken());
+    },
+
+    updateGame(id, data) {
+        return apiCall(`/games/${id}`, 'PUT', data, AuthAPI.getToken());
+    },
+
+    deleteGame(id) {
+        return apiCall(`/games/${id}`, 'DELETE', null, AuthAPI.getToken());
+    },
 };
 
 // Export các API modules
