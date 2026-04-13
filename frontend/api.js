@@ -421,6 +421,23 @@ const AdminAPI = {
     deleteGame(id) {
         return apiCall(`/games/${id}`, 'DELETE', null, AuthAPI.getToken());
     },
+
+    // GAMES APPROVAL
+    getPendingGames(page = 0, size = 10) {
+        return apiCall(`/admin/games/pending?page=${page}&size=${size}`, 'GET', null, AuthAPI.getToken());
+    },
+
+    approveGame(id) {
+        return apiCall(`/admin/games/${id}/approve`, 'PUT', null, AuthAPI.getToken());
+    },
+
+    rejectGame(id) {
+        return apiCall(`/admin/games/${id}/reject`, 'PUT', null, AuthAPI.getToken());
+    },
+
+    updateGameStatus(id, status) {
+        return apiCall(`/admin/games/${id}/status?status=${status}`, 'PUT', null, AuthAPI.getToken());
+    },
 };
 
 // Export các API modules
