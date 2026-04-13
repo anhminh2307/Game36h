@@ -416,6 +416,35 @@ async function loadGameDetail(gameId) {
 //     }
 // }
 
+// Play game
+function playGame(gameUrl) {
+    // In real implementation, load game in iframe or redirect
+    console.log('Playing game:', gameUrl);
+    // window.open(gameUrl, '_blank');
+}
+
+// Toggle favorite on game detail page
+async function toggleGameFavorite(gameId, btn) {
+    try {
+        const isActive = btn.classList.contains('active');
+        
+        if (isActive) {
+            await window.API.Favorites.removeFavorite(gameId);
+            btn.classList.remove('active');
+            btn.innerHTML = '<span>🤍</span> Yêu thích';
+        } else {
+            const result = await window.API.Favorites.toggleFavorite(gameId);
+            if (result) { // Only add to active if result is not null (not unfavorited)
+                btn.classList.add('active');
+                btn.innerHTML = '<span>❤️</span> Đã thích';
+            }
+        }
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+        alert('Không thể cập nhật yêu thích. Vui lòng thử lại.');
+    }
+}
+
 // ==================== PROFILE ====================
 
 // Load profile data
