@@ -71,6 +71,15 @@ public class ForumController {
         throw new RuntimeException("Invalid user details");
     }
 
+@PostMapping("/posts/{id}/like")
+    public ResponseEntity<ForumPostResponse> likePost(@PathVariable Long id) {
+        return ResponseEntity.ok(forumService.likePost(id));
+    }
+
+    @PostMapping("/posts/{id}/dislike")
+    public ResponseEntity<ForumPostResponse> dislikePost(@PathVariable Long id) {
+        return ResponseEntity.ok(forumService.dislikePost(id));
+    }
     private boolean isAdmin(UserDetails userDetails) {
         return userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));

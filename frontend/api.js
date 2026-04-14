@@ -461,6 +461,12 @@ const ForumAPI = {
     deletePost(id) {
         return apiCall(`/forum/posts/${id}`, 'DELETE', null, AuthAPI.getToken());
     },
+    Postlike(id) {
+        return apiCall(`/forum/posts/${id}/like`, 'POST', null, AuthAPI.getToken());
+    },
+    dislikePost(id) {
+        return apiCall(`/forum/posts/${id}/dislike`, 'POST', null, AuthAPI.getToken());
+    },
     addComment(postId, data) {
         return apiCall(`/forum/posts/${postId}/comments`, 'POST', data, AuthAPI.getToken());
     },

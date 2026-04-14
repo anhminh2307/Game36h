@@ -185,6 +185,16 @@ async function selectPost(postId) {
     await loadPostDetail(postId);
 }
 
+async function togglePostReaction(postId, isLike) {
+    try {
+        if (isLike) await window.API.Forum.likePost(postId);
+        else await window.API.Forum.dislikePost(postId);
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể cập nhật tương tác bài viết.');
+    }
+}
+
 async function refreshData(selectedId) {
     await loadForumData();
     if (selectedId) {
