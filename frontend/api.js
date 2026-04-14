@@ -470,6 +470,12 @@ const ForumAPI = {
     addComment(postId, data) {
         return apiCall(`/forum/posts/${postId}/comments`, 'POST', data, AuthAPI.getToken());
     },
+    likeComment(postId, commentId) {
+        return apiCall(`/forum/posts/${postId}/comments/${commentId}/like`, 'POST', null, AuthAPI.getToken());
+    },
+    dislikeComment(postId, commentId) {
+        return apiCall(`/forum/posts/${postId}/comments/${commentId}/dislike`, 'POST', null, AuthAPI.getToken());
+    },
 };
 
 // Export các API modules

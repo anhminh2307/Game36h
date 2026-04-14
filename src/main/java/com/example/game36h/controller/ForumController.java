@@ -80,6 +80,17 @@ public class ForumController {
     public ResponseEntity<ForumPostResponse> dislikePost(@PathVariable Long id) {
         return ResponseEntity.ok(forumService.dislikePost(id));
     }
+
+    @PostMapping("/posts/{postId}/comments/{commentId}/like")
+    public ResponseEntity<ForumCommentResponse> likeComment(@PathVariable Long commentId) {
+        return ResponseEntity.ok(forumService.likeComment(commentId));
+    }
+
+    @PostMapping("/posts/{postId}/comments/{commentId}/dislike")
+    public ResponseEntity<ForumCommentResponse> dislikeComment(@PathVariable Long commentId) {
+        return ResponseEntity.ok(forumService.dislikeComment(commentId));
+    }
+
     private boolean isAdmin(UserDetails userDetails) {
         return userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
