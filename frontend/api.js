@@ -283,6 +283,7 @@ const UserGamesAPI = {
         return apiCall('/games', 'POST', data, token);
     },
 
+    
     // Upload file game (multipart/form-data)
     async uploadGameFile(formData) {
         const token = AuthAPI.getToken();
