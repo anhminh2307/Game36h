@@ -132,3 +132,97 @@ function createPostCard(post) {
         </div>
     `;
 }
+
+function renderPostDetail() {
+    const detailElement = document.getElementById('forumDetailPanel');
+    if (!detailElement) return;
+
+    const post = forumState.currentPost;
+    if (!post) {
+        detailElement.innerHTML = '<div class="forum-detail-empty"><h2>Chọn bài viết để xem chi tiết</h2><p>Nhấn vào một bài viết bên trái để thấy nội dung chi tiết và bình luận.</p></div>';
+        return;
+    }
+
+    const author = post.user?.username || 'Người dùng';
+    const commentHtml = post.comments?.length
+        ? post.comments.map(comment => renderComment(comment, post.id)).join('')
+        : '<p>Chưa có bình luận nào. Hãy là người đầu tiên tham gia trao đổi.</p>';
+
+    detailElement.innerHTML = `
+        <div class="forum-card">
+            <div class="forum-detail-topbar">
+                <div>
+                    <h2>${post.title}</h2>
+                    <div class="forum-post-meta">
+                        <span class="badge-tag">${post.category || 'Khác'}</span>
+                        <span>Đăng bởi ${author}</span>
+                        <span>${formatDate(post.createdAt)}</span>
+                    </div>
+                </div>
+                <div class="forum-post-actions">
+                    <button onclick="togglePostReaction(${post.id}, true)">👍 ${post.likes || 0}</button>
+                    <button onclick="togglePostReaction(${post.id}, false)">👎 ${post.dislikes || 0}</button>
+                    <button onclick="reportPost(${post.id})">Báo cáo</button>
+                </div>
+            </div>
+            <p style="white-space: pre-line; line-height: 1.75;">${post.body}</p>
+        </div>
+        <div class="forum-card">
+            <h3>Bình luận</h3>
+            <div id="forumComments">${commentHtml}</div>
+            <div class="forum-field">
+                <label for="newComment">Viết bình luận</label>
+                <textarea id="newComment" placeholder="Nhập bình luận của bạn..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-register" onclick="submitComment(${post.id})">Gửi bình luận</button>
+            </div>
+        </div>
+    `;
+}
+
+async function selectPost(postId) {
+    await loadPostDetail(postId);
+}
+
+async function refreshData(selectedId) {
+    await loadForumData();
+    if (selectedId) {
+        await loadPostDetail(selectedId);
+    }
+}
+
+function handleForumSearch() {
+    forumState.searchKeyword = document.getElementById('forumSearch')?.value || '';
+    renderPostList();
+}
+
+function handleFilterTitle() {
+    forumState.filterTitle = document.getElementById('filterTitle')?.value || '';
+    renderPostList();
+}
+
+function handleSortChange() {
+    forumState.sortBy = document.getElementById('sortPosts')?.value || 'newest';
+    renderPostList();
+}
+
+function resetForumFilters() {
+    forumState.searchKeyword = '';
+    forumState.filterTitle = '';
+    forumState.sortBy = 'newest';
+    document.getElementById('forumSearch').value = '';
+    document.getElementById('filterTitle').value = '';
+    document.getElementById('sortPosts').value = 'newest';
+    renderPostList();
+}
+
+function resetForumFilters() {
+    forumState.searchKeyword = '';
+    forumState.filterTitle = '';
+    forumState.sortBy = 'newest';
+    document.getElementById('forumSearch').value = '';
+    document.getElementById('filterTitle').value = '';
+    document.getElementById('sortPosts').value = 'newest';
+    renderPostList();
+}
