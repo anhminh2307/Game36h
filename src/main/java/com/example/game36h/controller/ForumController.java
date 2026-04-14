@@ -81,6 +81,25 @@ public class ForumController {
         return ResponseEntity.ok(forumService.dislikePost(id));
     }
 
+    @PostMapping("/posts/{postId}/comments")
+    public ResponseEntity<ForumCommentResponse> addComment(
+            @PathVariable Long postId,
+            @Valid @RequestBody ForumCommentRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        return ResponseEntity.ok(forumService.addComment(postId, request, userId));
+    }
+
+    @PostMapping("/posts/{postId}/comments/{commentId}/reply")
+    public ResponseEntity<ForumCommentResponse> replyComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @Valid @RequestBody ForumCommentRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        return ResponseEntity.ok(forumService.replyToComment(postId, commentId, request, userId));
+    }
+
     @PostMapping("/posts/{postId}/comments/{commentId}/like")
     public ResponseEntity<ForumCommentResponse> likeComment(@PathVariable Long commentId) {
         return ResponseEntity.ok(forumService.likeComment(commentId));

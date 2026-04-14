@@ -289,7 +289,7 @@ async function replyToComment(postId, commentId) {
         return;
     }
 
-    const replyContent = prompt('Nhập trả lời của bạn:');
+    const replyContent = prompt('Nhập trả lời của bạn: ');
     if (!replyContent || !replyContent.trim()) return;
 
     try {

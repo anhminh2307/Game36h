@@ -441,6 +441,51 @@ const AdminAPI = {
     },
 };
 
+    // ==================== COMMENTS API ====================
+
+const CommentsAPI = {
+    // Lấy bình luận của game
+    async getComments(gameId, page = 0, size = 10) {
+        return apiCall(`/games/${gameId}/comments?page=${page}&size=${size}`);
+    },
+
+    // Thêm bình luận mới
+    async addComment(gameId, content) {
+        const token = AuthAPI.getToken();
+        return apiCall('/comments', 'POST', { gameId: gameId, content }, token);
+    },
+
+    // Cập nhật bình luận
+    async updateComment(commentId, content) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/comments/${commentId}`, 'PUT', { content }, token);
+    },
+
+    // Xóa bình luận
+    async deleteComment(commentId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/comments/${commentId}`, 'DELETE', null, token);
+    },
+
+    // Thêm reply cho bình luận
+    async addReply(commentId, content) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/comments/${commentId}/replies`, 'POST', { content }, token);
+    },
+
+    // Lấy replies của bình luận
+    async getReplies(commentId) {
+        return apiCall(`/comments/${commentId}/replies`);
+    },
+
+    // Xóa reply
+    async deleteReply(replyId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/comments/replies/${replyId}`, 'DELETE', null, token);
+    }
+
+};
+
 const ForumAPI = {
     getPosts({ search = '', title = '', sort = 'newest' } = {}) {
         const query = new URLSearchParams();
@@ -475,6 +520,9 @@ const ForumAPI = {
     },
     dislikeComment(postId, commentId) {
         return apiCall(`/forum/posts/${postId}/comments/${commentId}/dislike`, 'POST', null, AuthAPI.getToken());
+    },
+    replyComment(postId, commentId, data) {
+        return apiCall(`/forum/posts/${postId}/comments/${commentId}/reply`, 'POST', data, AuthAPI.getToken());
     },
 };
 
