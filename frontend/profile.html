@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ của tôi - Game36h</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="profile.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-y">Game</span>
+                    <span class="logo-8">36</span>
+                    <span class="logo-com">h</span>
+                </a>
+            </div>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm game...">
+                <button class="search-btn" onclick="searchGames()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="header-actions">
+                <a href="login.html" class="btn-login">Đăng nhập</a>
+                <a href="register.html" class="btn-register">Đăng ký</a>
+            </div>
+        </div>
+    </header>
+
+
+
+    <!-- Profile Content -->
+    <main class="main-content">
+        <div class="profile-container">
+            <!-- Profile Header -->
+            <section class="profile-header">
+                <div class="profile-avatar-section">
+                    <div class="profile-avatar">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=User123" alt="Profile Avatar">
+                        <button class="change-avatar-btn">📷</button>
+                    </div>
+                    <div class="profile-info">
+                        <h1 class="profile-name">GameMaster</h1>
+                        <p class="profile-email">gamemaster@email.com</p>
+                        <span class="profile-role" id="profileRole">Thành viên</span>
+                        <p class="profile-joined" id="profileJoined">Tham gia: --</p>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <span class="stat-number" id="statGames">0</span>
+                        <span class="stat-label">Game đã chơi</span>
+                    </div>
+                    <div class="profile-stat">
+                        <span class="stat-number" id="statFavorites">0</span>
+                        <span class="stat-label">Yêu thích</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Profile Tabs -->
+            <div class="profile-tabs">
+                <button class="tab-btn active" data-tab="favorites">⭐ Yêu thích</button>
+                <button class="tab-btn" data-tab="history">🕐 Lịch sử</button>
+                <button class="tab-btn" data-tab="my-games">🎮 Game của tôi</button>
+                <button class="tab-btn" data-tab="upload">⬆️ Upload Game</button>
+                <button class="tab-btn" data-tab="settings">⚙️ Cài đặt</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Favorites Tab -->
+                <div id="favorites" class="tab-panel active">
+                    <h2>Game yêu thích (<span id="favoritesCount">0</span>)</h2>
+                    <div class="games-grid" id="favoritesGrid">
+                        <div class="loading">Đang tải...</div>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div id="history" class="tab-panel">
+                    <h2>Lịch sử chơi game</h2>
+                    <div class="history-list" id="historyList">
+                        <div class="loading">Đang tải...</div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings" class="tab-panel">
+                    <h2>Cài đặt tài khoản</h2>
+                    <form class="settings-form" id="settingsForm">
+                        <div class="form-group">
+                            <label>Tên đăng nhập</label>
+                            <input type="text" id="settingsUsername" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="settingsEmail">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu hiện tại</label>
+                            <input type="password" id="currentPassword" placeholder="Nhập mật khẩu hiện tại">
+                        </div>
+                        <div class="form-group">
+                            <label>Mật khẩu mới</label>
+                            <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới">
+                        </div>
+                        <div class="form-group">
+                            <label>Xác nhận mật khẩu mới</label>
+                            <input type="password" id="confirmPassword" placeholder="Nhập lại mật khẩu mới">
+                        </div>
+                        <button type="submit" class="btn-save">Lưu thay đổi</button>
+                    </form>
+                </div>
+
+                <!-- My Games Tab -->
+                <div id="my-games" class="tab-panel">
+                    <h2>Game của tôi</h2>
+                    <div class="games-list" id="myGamesList">
+                        <div class="loading">Đang tải...</div>
+                    </div>
+                </div>
+
+                <!-- Upload Game Tab -->
+                <div id="upload" class="tab-panel">
+                    <h2>Upload Game Mới</h2>
+                    <form class="upload-form" id="uploadGameForm">
+                        <div class="form-group">
+                            <label>Tên game *</label>
+                            <input type="text" id="gameTitle" placeholder="Nhập tên game" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mô tả</label>
+                            <textarea id="gameDescription" placeholder="Mô tả ngắn về game (tùy chọn)" rows="3"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Thể loại *</label>
+                            <select id="gameCategory" required>
+                                <option value="">Chọn thể loại</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>URL game *</label>
+                            <input type="url" id="gameUrl" placeholder="https://example.com/game" required>
+                            <small class="form-hint">Link đến game (iframe URL hoặc trang web)</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Thumbnail URL</label>
+                            <input type="url" id="gameThumbnail" placeholder="https://example.com/image.jpg">
+                            <small class="form-hint">Link ảnh thumbnail (tùy chọn)</small>
+                        </div>
+                        <div class="form-notice">
+                            <span class="notice-icon">ℹ️</span>
+                            <span class="notice-text">Game của bạn sẽ ở trạng thái <strong>CHỜ DUYỆT</strong> sau khi upload. Admin sẽ kiểm tra và phê duyệt trong vòng 24h.</span>
+                        </div>
+                        <button type="submit" class="btn-upload">📤 Upload Game</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-bottom">
+                <p>© 2024 Game36h - Chơi game trực tuyến miễn phí!</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="main.js"></script>
+    <script>
+        // ================= AUTH & UI =================
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!API.Auth.isLoggedIn()) {
+                window.location.href = 'login.html?redirect=profile.html';
+                return;
+            }
+            updateHeaderActions();
+            loadUserProfile();
+            loadUserStats();
+            loadFavorites();
+            loadHistory();
+            loadMyGames();
+            loadCategoriesForUpload();
+            initSettingsForm();
+            initUploadForm();
+        });
+
+        function updateHeaderActions() {
+            const headerActions = document.querySelector('.header-actions');
+            if (!headerActions) return;
+
+            if (API.Auth.isLoggedIn()) {
+                const user = API.Auth.getCurrentUser();
+                headerActions.innerHTML = `
+                    <a href="profile.html" class="user-avatar-link">
+                        <img src="${user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + (user?.username || 'User')}" alt="Avatar" class="header-avatar">
+                    </a>
+                    <span class="username">${user?.username || 'User'}</span>
+                    <button class="btn-register" onclick="API.Auth.logout()">Đăng xuất</button>
+                `;
+            }
+        }
+
+        function searchGames() {
+            const keyword = document.getElementById('searchInput').value.trim();
+            if (keyword) {
+                window.location.href = `search.html?q=${encodeURIComponent(keyword)}`;
+            }
+        }
+
+        document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchGames();
+        });
+
+        function loadUserProfile() {
+            const user = API.Auth.getCurrentUser();
+            if (user) {
+                document.querySelector('.profile-name').textContent = user.username || 'User';
+                document.querySelector('.profile-email').textContent = user.email || '';
+                document.querySelector('.profile-avatar img').src = user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username || 'User'}`;
+                document.getElementById('profileRole').textContent = user.role || 'Thành viên';
+                
+                const joinedDate = user.created_at ? new Date(user.created_at).toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' }) : '--';
+                document.getElementById('profileJoined').textContent = `Tham gia: ${joinedDate}`;
+                
+                // Pre-fill settings form
+                document.getElementById('settingsUsername').value = user.username || '';
+                document.getElementById('settingsEmail').value = user.email || '';
+            }
+        }
+
+        async function loadUserStats() {
+            try {
+                const user = API.Auth.getCurrentUser();
+                const userId = user?.id;
+                if (!userId) return;
+                
+                const [favoritesRes, historyRes] = await Promise.all([
+                    API.Favorites.getUserFavorites(userId).catch(() => ({ content: [] })),
+                    API.History.getUserHistory(userId).catch(() => ({ content: [] }))
+                ]);
+                
+                const favorites = favoritesRes.content || favoritesRes.data || [];
+                const history = historyRes.content || historyRes.data || [];
+                
+                document.getElementById('statFavorites').textContent = favorites.length || 0;
+                document.getElementById('statGames').textContent = history.length || 0;
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        async function loadFavorites() {
+            const grid = document.getElementById('favoritesGrid');
+            try {
+                const user = API.Auth.getCurrentUser();
+                const userId = user?.id;
+                if (!userId) {
+                    grid.innerHTML = '<div class="error">Vui lòng đăng nhập</div>';
+                    return;
+                }
+                
+                const result = await API.Favorites.getUserFavorites(userId);
+                const favorites = result.content || result.data || [];
+                
+                document.getElementById('favoritesCount').textContent = favorites.length;
+                
+                if (favorites.length === 0) {
+                    grid.innerHTML = '<div class="empty-state">Chưa có game yêu thích nào</div>';
+                    return;
+                }
+                
+                grid.innerHTML = favorites.map(fav => {
+                    const thumbnail = fav.gameThumbnail && fav.gameThumbnail.trim() !== '' 
+                        ? fav.gameThumbnail 
+                        : 'https://via.placeholder.com/300?text=No+Image';
+                    return `
+                        <div class="game-card" data-favorite-id="${fav.id}" data-game-id="${fav.gameId}">
+                            <div class="game-thumb">
+                                <img src="${thumbnail}" alt="${fav.gameTitle || 'Game'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/300?text=No+Image'">
+                                <div class="game-overlay">
+                                    <button class="play-btn" onclick="playGame('${fav.gameId}')">Chơi ngay</button>
+                                </div>
+                                <button class="remove-favorite" title="Xóa khỏi yêu thích" onclick="removeFavorite('${fav.id}', this)">❤️</button>
+                            </div>
+                            <div class="game-info">
+                                <h3 class="game-title">${fav.gameTitle || 'Game'}</h3>
+                                <div class="game-meta">
+                                    <span class="rating">⭐ ${fav.averageRating ? fav.averageRating.toFixed(1) : '0.0'}</span>
+                                    <span class="plays">👁 ${formatNumber(fav.views || 0)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading favorites:', err);
+                grid.innerHTML = '<div class="error">Không thể tải danh sách yêu thích</div>';
+            }
+        }
+
+        async function loadHistory() {
+            const list = document.getElementById('historyList');
+            try {
+                const user = API.Auth.getCurrentUser();
+                const userId = user?.id;
+                if (!userId) {
+                    list.innerHTML = '<div class="error">Vui lòng đăng nhập</div>';
+                    return;
+                }
+                
+                const result = await API.History.getUserHistory(userId);
+                const history = result.content || result.data || [];
+                
+                if (history.length === 0) {
+                    list.innerHTML = '<div class="empty-state">Chưa có lịch sử chơi game</div>';
+                    return;
+                }
+                
+                list.innerHTML = history.map(item => {
+                    const thumbnail = item.gameThumbnail && item.gameThumbnail.trim() !== '' 
+                        ? item.gameThumbnail 
+                        : 'https://via.placeholder.com/150?text=No+Image';
+                    const playedAt = item.playedAt ? formatTimeAgo(new Date(item.playedAt)) : '';
+                    return `
+                        <div class="history-item" data-history-id="${item.id}">
+                            <div class="history-thumb">
+                                <img src="${thumbnail}" alt="${item.gameTitle || 'Game'}" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=No+Image'">
+                            </div>
+                            <div class="history-info">
+                                <h4>${item.gameTitle || 'Game'}</h4>
+                                <p>Chơi lần cuối: ${playedAt}</p>
+                            </div>
+                            <button onclick="playGame('${item.gameId}')" class="btn-play-again">Chơi lại</button>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading history:', err);
+                list.innerHTML = '<div class="error">Không thể tải lịch sử</div>';
+            }
+        }
+
+        async function playGame(gameId) {
+            // Add to history if logged in
+            if (API.Auth.isLoggedIn()) {
+                try {
+                    await API.History.addToHistory(gameId);
+                    console.log('Added to history');
+                } catch (err) {
+                    console.error('Failed to add history:', err);
+                }
+            }
+            
+            // Increment views
+            try {
+                await API.Games.incrementViews(gameId);
+            } catch (err) {
+                console.error('Failed to increment views:', err);
+            }
+            
+            // Navigate to game page
+            window.location.href = `game.html?id=${gameId}`;
+        }
+
+        async function removeFavorite(favoriteId, btn) {
+            if (!confirm('Xóa game này khỏi danh sách yêu thích?')) return;
+            try {
+                await API.Favorites.removeFavoriteById(favoriteId);
+                const gameCard = btn.closest('.game-card');
+                gameCard.remove();
+                
+                // Update count
+                const currentCount = parseInt(document.getElementById('favoritesCount').textContent);
+                document.getElementById('favoritesCount').textContent = Math.max(0, currentCount - 1);
+                document.getElementById('statFavorites').textContent = Math.max(0, currentCount - 1);
+                
+                // Check if empty
+                const grid = document.getElementById('favoritesGrid');
+                if (grid.children.length === 0) {
+                    grid.innerHTML = '<div class="empty-state">Chưa có game yêu thích nào</div>';
+                }
+            } catch (err) {
+                console.error('Error removing favorite:', err);
+                alert('Không thể xóa khỏi yêu thích');
+            }
+        }
+
+        function initSettingsForm() {
+            const form = document.getElementById('settingsForm');
+            const saveBtn = form.querySelector('.btn-save');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('settingsEmail').value;
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                
+                // Loading state
+                const originalBtnText = saveBtn.textContent;
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Đang lưu...';
+                
+                try {
+                    let message = '';
+                    
+                    // Update email if changed
+                    const user = API.Auth.getCurrentUser();
+                    if (email && email !== user.email) {
+                        await API.Auth.updateProfile({ email });
+                        // Update localStorage
+                        user.email = email;
+                        localStorage.setItem('user', JSON.stringify(user));
+                        message += 'Email đã cập nhật. ';
+                    }
+                    
+                    // Change password if provided
+                    if (newPassword) {
+                        if (newPassword !== confirmPassword) {
+                            alert('Mật khẩu mới không khớp');
+                            saveBtn.disabled = false;
+                            saveBtn.textContent = originalBtnText;
+                            return;
+                        }
+                        if (!currentPassword) {
+                            alert('Vui lòng nhập mật khẩu hiện tại');
+                            saveBtn.disabled = false;
+                            saveBtn.textContent = originalBtnText;
+                            return;
+                        }
+                        await API.Auth.changePassword({ currentPassword, newPassword });
+                        message += 'Mật khẩu đã đổi thành công!';
+                    }
+                    
+                    alert(message || 'Cập nhật thành công!');
+                    
+                    // Clear password fields
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    
+                    // Update UI
+                    document.querySelector('.profile-email').textContent = email || user.email;
+                } catch (err) {
+                    console.error('Error updating settings:', err);
+                    const errorMsg = err.message || 'Lỗi không xác định';
+                    if (errorMsg.includes('Current password is incorrect')) {
+                        alert('Mật khẩu hiện tại không đúng');
+                    } else if (errorMsg.includes('Password')) {
+                        alert('Lỗi mật khẩu: ' + errorMsg);
+                    } else {
+                        alert('Cập nhật thất bại: ' + errorMsg);
+                    }
+                } finally {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = originalBtnText;
+                }
+            });
+        }
+
+        // Tab switching
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.dataset.tab;
+                
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanels.forEach(p => p.classList.remove('active'));
+                
+                btn.classList.add('active');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Helper functions
+        function getGradientForGame(id) {
+            const gradients = [
+                'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+                'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                'linear-gradient(135deg, #30cfd0 0%, #330867 100%)',
+            ];
+            return gradients[(id || 0) % gradients.length];
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            
+            if (diff < 60) return 'Vừa xong';
+            if (diff < 3600) return `${Math.floor(diff / 60)} phút trước`;
+            if (diff < 86400) return `${Math.floor(diff / 3600)} giờ trước`;
+            if (diff < 604800) return `${Math.floor(diff / 86400)} ngày trước`;
+            if (diff < 2592000) return `${Math.floor(diff / 604800)} tuần trước`;
+            return date.toLocaleDateString('vi-VN');
+        }
+
+        // ================= MY GAMES =================
+        async function loadMyGames() {
+            const list = document.getElementById('myGamesList');
+            try {
+                const user = API.Auth.getCurrentUser();
+                if (!user?.id) {
+                    list.innerHTML = '<div class="error">Vui lòng đăng nhập</div>';
+                    return;
+                }
+                
+                const result = await API.UserGames.getMyGames();
+                const games = result.content || result.data || [];
+                
+                if (games.length === 0) {
+                    list.innerHTML = '<div class="empty-state">Bạn chưa upload game nào. Hãy upload game mới!</div>';
+                    return;
+                }
+                
+                list.innerHTML = games.map(game => {
+                    const statusClass = game.status?.toLowerCase() || 'pending';
+                    const statusText = {
+                        'PENDING': '⏳ Chờ duyệt',
+                        'APPROVED': '✅ Đã duyệt',
+                        'REJECTED': '❌ Từ chối'
+                    }[game.status] || 'Chờ duyệt';
+                    
+                    return `
+                        <div class="game-item" data-game-id="${game.id}">
+                            <div class="game-thumb-small">
+                                <img src="${game.thumbnail || 'placeholder.jpg'}" alt="${game.title}">
+                            </div>
+                            <div class="game-info">
+                                <h4>${game.title}</h4>
+                                <p class="game-category">${game.category?.name || 'Không rõ'}</p>
+                                <span class="game-status ${statusClass}">${statusText}</span>
+                            </div>
+                            <div class="game-stats">
+                                <span>👁 ${formatNumber(game.views || 0)}</span>
+                                <span>⭐ ${game.averageRating || 0}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                console.error('Error loading my games:', err);
+                list.innerHTML = '<div class="error">Không thể tải danh sách game</div>';
+            }
+        }
+
+        // ================= UPLOAD GAME =================
+        async function loadCategoriesForUpload() {
+            try {
+                const categories = await API.Categories.getCategories();
+                const select = document.getElementById('gameCategory');
+                
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.name;
+                    select.appendChild(option);
+                });
+            } catch (err) {
+                console.error('Error loading categories:', err);
+            }
+        }
+
+        function initUploadForm() {
+            const form = document.getElementById('uploadGameForm');
+            const uploadBtn = form.querySelector('.btn-upload');
+            
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const gameData = {
+                    title: document.getElementById('gameTitle').value,
+                    description: document.getElementById('gameDescription').value,
+                    category_id: parseInt(document.getElementById('gameCategory').value),
+                    game_url: document.getElementById('gameUrl').value,
+                    thumbnail: document.getElementById('gameThumbnail').value || null
+                };
+                
+                // Loading state
+                const originalBtnText = uploadBtn.textContent;
+                uploadBtn.disabled = true;
+                uploadBtn.textContent = 'Đang upload...';
+                
+                try {
+                    await API.UserGames.uploadGame(gameData);
+                    alert('Game đã được upload! Game của bạn đang ở trạng thái CHỜ DUYỆT. Admin sẽ kiểm tra và phê duyệt trong vòng 24h.');
+                    
+                    // Reset form
+                    form.reset();
+                    
+                    // Reload my games tab
+                    loadMyGames();
+                    
+                    // Switch to my games tab
+                    document.querySelector('[data-tab="my-games"]').click();
+                } catch (err) {
+                    console.error('Error uploading game:', err);
+                    alert('Upload thất bại: ' + (err.message || 'Lỗi không xác định'));
+                } finally {
+                    uploadBtn.disabled = false;
+                    uploadBtn.textContent = originalBtnText;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

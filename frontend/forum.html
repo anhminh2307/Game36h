@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diễn đàn Game36h</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-y">Game</span>
+                    <span class="logo-8">36</span>
+                    <span class="logo-com">h</span>
+                </a>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm game...">
+                <button class="search-btn" onclick="performSearch()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="header-actions">
+                <a href="forum.html" class="btn-forum active">Diễn đàn</a>
+                <a href="login.html" class="btn-login">Đăng nhập</a>
+                <a href="register.html" class="btn-register">Đăng ký</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="forum-page">
+            <div class="forum-hero">
+                <div>
+                    <h1>Diễn đàn Game36h</h1>
+                    <p>Kết nối cộng đồng người chơi, chia sẻ kinh nghiệm và báo cáo nội dung vi phạm nhanh chóng.</p>
+                </div>
+                <button class="btn-register" id="createPostBtn" onclick="openPostModal()">Tạo bài viết mới</button>
+            </div>
+
+            <div class="forum-layout">
+                <aside class="forum-sidebar">
+                    <div class="forum-card">
+                        <h2>Bộ lọc nhanh</h2>
+                        <div class="forum-field">
+                            <label for="forumSearch">Tìm kiếm bài viết</label>
+                            <input type="text" id="forumSearch" placeholder="Tìm theo tiêu đề, nội dung..." oninput="handleForumSearch()">
+                        </div>
+                        <div class="forum-field">
+                            <label for="filterTitle">Lọc theo tên bài viết</label>
+                            <input type="text" id="filterTitle" placeholder="Nhập tên hoặc từ khóa" oninput="handleFilterTitle()">
+                        </div>
+                        <div class="forum-field">
+                            <label for="sortPosts">Sắp xếp bài viết</label>
+                            <select id="sortPosts" onchange="handleSortChange()">
+                                <option value="newest">Mới nhất</option>
+                                <option value="popular">Phổ biến</option>
+                                <option value="comments">Nhiều bình luận</option>
+                                <option value="controversial">Gây chú ý</option>
+                            </select>
+                        </div>
+                        <button class="btn-forum" onclick="resetForumFilters()">Đặt lại bộ lọc</button>
+                    </div>
+
+                    <div class="forum-card" id="adminReviewSection" style="display:none;">
+                        <h2>Quản lý báo cáo</h2>
+                        <p id="adminReviewSummary">Kiểm tra các nội dung bị báo cáo và xử lý ngay.</p>
+                        <div id="reportedItems"></div>
+                    </div>
+                </aside>
+
+                <section class="forum-main">
+                    <div class="forum-list-topbar">
+                        <div>
+                            <h2>Bài viết mới nhất</h2>
+                            <p id="forumStats">Hiện có <span id="postCount">0</span> bài viết.</p>
+                        </div>
+                        <div class="forum-top-actions">
+                            <button class="btn-forum" onclick="openPostModal()">Tạo bài viết</button>
+                        </div>
+                    </div>
+                    <div id="forumPosts" class="forum-posts"></div>
+                </section>
+
+                <section class="forum-detail-panel" id="forumDetailPanel">
+                    <div class="forum-detail-empty">
+                        <h2>Chọn bài viết để xem chi tiết</h2>
+                        <p>Hoặc tạo bài viết mới và tương tác cùng cộng đồng.</p>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal" id="postModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Tạo bài viết mới</h2>
+                <button class="modal-close" onclick="closePostModal()">×</button>
+            </div>
+            <div class="forum-field">
+                <label for="postTitle">Tiêu đề</label>
+                <input type="text" id="postTitle" placeholder="Nhập tiêu đề bài viết">
+            </div>
+            <div class="forum-field">
+                <label for="postCategory">Chuyên mục</label>
+                <select id="postCategory">
+                    <option value="Chiến thuật">Chiến thuật</option>
+                    <option value="Mẹo chơi">Mẹo chơi</option>
+                    <option value="Cộng đồng">Cộng đồng</option>
+                    <option value="Báo cáo">Báo cáo</option>
+                </select>
+            </div>
+            <div class="forum-field">
+                <label for="postBody">Nội dung bài viết</label>
+                <textarea id="postBody" placeholder="Viết nội dung chia sẻ hoặc câu hỏi của bạn..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-login" onclick="closePostModal()">Hủy</button>
+                <button class="btn-register" onclick="savePost()">Lưu bài viết</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-logo">
+                    <span style="color: #4CAF50;">Game</span>
+                    <span>36</span>
+                    <span style="color: #4CAF50;">h</span>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">Discord</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Về Game36h</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="guide.html">Hướng dẫn</a></li>
+                        <li><a href="support.html">Hỗ trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Chính Sách</h4>
+                    <ul>
+                        <li><a href="#">Điều khoản sử dụng</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="#">Liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Game36h. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="forum.js"></script>
+</body>
+</html>

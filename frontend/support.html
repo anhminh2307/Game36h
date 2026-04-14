@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hỗ Trợ & Phản Hồi - Game36h</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-y">Game</span>
+                    <span class="logo-8">36</span>
+                    <span class="logo-com">h</span>
+                </a>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Tìm kiếm game...">
+                <button class="search-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="header-actions logged-in" id="headerActions">
+                <div class="user-dropdown">
+                    <span class="username" id="username">Người dùng</span>
+                    <div class="dropdown-menu">
+                        <a href="profile.html">Thông tin cá nhân</a>
+                        <a href="support.html">Hỗ trợ</a>
+                        <hr>
+                        <a href="#" class="logout" id="logoutBtn">Đăng xuất</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="support-container">
+            <div class="support-header">
+                <h1>🤝 Hỗ Trợ & Phản Hồi</h1>
+                <p>Chúng tôi luôn sẵn sàng lắng nghe ý kiến của bạn. Hãy gửi phản hồi để giúp chúng tôi cải thiện Game36h</p>
+            </div>
+
+            <!-- Alert Message -->
+            <div id="alertMessage"></div>
+
+            <!-- Support Form -->
+            <form class="support-form" id="supportForm">
+                <div class="form-group">
+                    <label for="fullName">Họ và tên *</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="Nhập họ và tên của bạn" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" placeholder="Nhập email của bạn" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="content">Nội dung phản hồi *</label>
+                    <textarea id="content" name="content" placeholder="Nhập nội dung phản hồi của bạn..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Gửi Phản Hồi</button>
+            </form>
+
+            <!-- Info Cards -->
+            <div class="support-info">
+                <div class="info-card">
+                    <div class="info-icon">⚡</div>
+                    <h3>Phản Hồi Nhanh</h3>
+                    <p>Chúng tôi sẽ phản hồi trong vòng 24 giờ</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">🎯</div>
+                    <h3>Hỗ Trợ Chuyên Nghiệp</h3>
+                    <p>Đội ngũ support giàu kinh nghiệm sẵn sàng hỗ trợ</p>
+                </div>
+                <div class="info-card">
+                    <div class="info-icon">💬</div>
+                    <h3>Mọi Lúc Mọi Nơi</h3>
+                    <p>Liên lạc với chúng tôi bất kỳ lúc nào thuận tiện</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-logo">
+                    <span style="color: #4CAF50;">Game</span>
+                    <span>36</span>
+                    <span style="color: #4CAF50;">h</span>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">Discord</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Về Game36h</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="about.html">Giới thiệu</a></li>
+                        <li><a href="support.html">Hỗ trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Chính Sách</h4>
+                    <ul>
+                        <li><a href="terms.html">Điều khoản sử dụng</a></li>
+                        <li><a href="privacy.html">Chính sách bảo mật</a></li>
+                        <li><a href="contact.html">Liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Game36h. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize user info
+        function initializeUser() {
+            const username = localStorage.getItem('username') || 'Người dùng';
+            document.getElementById('username').textContent = username;
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        // Form submit handler
+        document.getElementById('supportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const content = document.getElementById('content').value.trim();
+
+            if (!fullName || !email || !content) {
+                showAlert('Vui lòng điền đầy đủ thông tin!', 'error');
+                return;
+            }
+
+            // Simulate API call
+            console.log({
+                fullName,
+                email,
+                content,
+                timestamp: new Date().toISOString()
+            });
+
+            // Show success message
+            showAlert('✓ Phản hồi của bạn đã được gửi thành công! Cảm ơn bạn đã góp ý.', 'success');
+
+            // Reset form
+            this.reset();
+        });
+
+        // Logout handler
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('username');
+            localStorage.removeItem('token');
+            window.location.href = 'login.html';
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', initializeUser);
+    </script>
+</body>
+</html>

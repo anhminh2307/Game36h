@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tìm Kiếm Game - Y8.COM</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="search.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="index.html">
+                    <span class="logo-y">Game</span>
+                    <span class="logo-8">36</span>
+                    <span class="logo-com">h</span>
+                </a>
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Tìm kiếm game..." id="headerSearch">
+                <button class="search-btn" onclick="searchFromHeader()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="header-actions">
+                <a href="login.html" class="btn-login">Đăng nhập</a>
+                <a href="register.html" class="btn-register">Đăng ký</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Content -->
+    <main class="main-content">
+        <div class="search-container">
+            <!-- Search Header -->
+            <div class="search-header">
+                <h1>Kết quả tìm kiếm</h1>
+                <p class="search-query">Tìm kiếm: <span id="searchQuery">""</span></p>
+                <p class="results-count">Tìm thấy <span id="resultsCount">0</span> game</p>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label>Thể loại:</label>
+                    <select id="categoryFilter" onchange="applyFilters()">
+                        <option value="">Tất cả thể loại</option>
+                        <!-- Categories will be loaded dynamically -->
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Sắp xếp theo:</label>
+                    <select id="sortFilter" onchange="applyFilters()">
+                        <option value="newest">Mới nhất</option>
+                        <option value="popular">Lượt chơi nhiều nhất</option>
+                        <option value="rating">Đánh giá cao nhất</option>
+                        <option value="name">Tên A-Z</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Hiển thị:</label>
+                    <select id="limitFilter" onchange="applyFilters()">
+                        <option value="12">12 game</option>
+                        <option value="24">24 game</option>
+                        <option value="48">48 game</option>
+                    </select>
+                </div>
+
+                <button class="btn-clear-filters" onclick="clearFilters()">
+                    <span>🔄</span> Đặt lại
+                </button>
+            </div>
+
+            <!-- Active Filters -->
+            <div class="active-filters" id="activeFilters">
+                <!-- Filters will be displayed here dynamically -->
+            </div>
+
+            <!-- Games Grid -->
+            <div class="games-grid" id="gamesGrid">
+                <!-- Games will be loaded here -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <!-- Pagination buttons will be loaded here -->
+            </div>
+
+            <!-- No Results -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>Không tìm thấy game nào</h3>
+                <p>Hãy thử tìm kiếm với từ khóa khác hoặc thay đổi bộ lọc</p>
+                <button class="btn-reset-search" onclick="clearFilters()">Xóa bộ lọc</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+<!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-logo">
+                    <span style="color: #4CAF50;">Game</span>
+                    <span>36</span>
+                    <span style="color: #4CAF50;">h</span>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link">Facebook</a>
+                    <a href="#" class="social-link">Twitter</a>
+                    <a href="#" class="social-link">Discord</a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Về Game36h</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="guide.html">Hướng dẫn</a></li>
+                        <li><a href="support.html">Hỗ trợ</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h4>Chính Sách</h4>
+                    <ul>
+                        <li><a href="terms.html">Điều khoản sử dụng</a></li>
+                        <li><a href="privacy.html">Chính sách bảo mật</a></li>
+                        <li><a href="contact.html">Liên hệ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Game36h. Tất cả quyền được bảo lưu.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="main.js"></script>
+    <script>
+        function updateHeaderActions() {
+            const headerActions = document.querySelector('.header-actions');
+            if (!headerActions) return;
+
+            if (window.API.Auth.isLoggedIn()) {
+                const user = window.API.Auth.getCurrentUser();
+                headerActions.innerHTML = `
+                    <div class="header-actions logged-in" id="headerActions">
+                        <div class="user-dropdown">
+                            <span class="username" id="username">Người dùng</span>
+                            <div class="dropdown-menu">
+                                <a href="profile.html">Thông tin cá nhân</a>
+                                <a href="support.html">Hỗ trợ</a>
+                                <hr>
+                                <a href="#" class="logout" id="logoutBtn">Đăng xuất</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        let currentPage = 1;
+        let totalPages = 1;
+        let categories = [];
+        let userFavorites = new Set(); // Store favorite game IDs
+        let currentFilters = {
+            q: '',
+            category: '',
+            sort: 'newest',
+            limit: 12
+        };
+
+        // Load user favorites
+        async function loadUserFavorites() {
+            if (!window.API.Auth.isLoggedIn()) return;
+            try {
+                const user = window.API.Auth.getCurrentUser();
+                const result = await window.API.Favorites.getUserFavorites(user.id);
+                const favorites = result.content || result.data || [];
+                userFavorites = new Set(favorites.map(fav => fav.gameId || fav.game?.id));
+            } catch (err) {
+                console.error('Error loading favorites:', err);
+            }
+        }
+
+        // Initialize search page
+        document.addEventListener('DOMContentLoaded', () => {
+            updateHeaderActions();
+            // Load categories first
+            loadCategories();
+
+            // Parse URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            currentFilters.q = urlParams.get('q') || '';
+            currentFilters.category = urlParams.get('category') || '';
+            currentFilters.sort = urlParams.get('sort') || 'newest';
+            currentPage = parseInt(urlParams.get('page')) || 1;
+
+            // Set filter values
+            if (currentFilters.q) {
+                document.getElementById('searchQuery').textContent = `"${currentFilters.q}"`;
+                document.getElementById('headerSearch').value = currentFilters.q;
+            }
+            if (currentFilters.sort) {
+                document.getElementById('sortFilter').value = currentFilters.sort;
+            }
+
+            // Load games
+            loadSearchResults();
+
+            // Header search functionality
+            document.getElementById('headerSearch').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') searchFromHeader();
+            });
+        });
+
+        async function loadCategories() {
+            try {
+                const result = await window.API.Categories.getCategories();
+                categories = result.data || result.categories || result || [];
+                
+                const select = document.getElementById('categoryFilter');
+                select.innerHTML = '<option value="">Tất cả thể loại</option>';
+                
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id || cat.slug || cat.code;
+                    option.textContent = cat.name;
+                    select.appendChild(option);
+                });
+
+                // Set selected value if from URL
+                if (currentFilters.category) {
+                    select.value = currentFilters.category;
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        async function loadSearchResults() {
+            const gamesGrid = document.getElementById('gamesGrid');
+            const noResults = document.getElementById('noResults');
+            const pagination = document.getElementById('pagination');
+
+            showLoading(gamesGrid);
+
+            // Load favorites first if logged in
+            await loadUserFavorites();
+
+            try {
+                let result;
+                
+                if (currentFilters.q) {
+                    // Search with query
+                    result = await window.API.Games.getGames({
+                        q: currentFilters.q,
+                        category: currentFilters.category,
+                        sort: currentFilters.sort,
+                        page: currentPage - 1, // Spring page starts at 0
+                        limit: currentFilters.limit
+                    });
+                } else if (currentFilters.category) {
+                    // Filter by category only
+                    result = await window.API.Games.getGamesByCategory(currentFilters.category);
+                } else {
+                    // Get all games with sorting
+                    result = await window.API.Games.getGames({
+                        sort: currentFilters.sort,
+                        page: currentPage - 1, // Spring page starts at 0
+                        limit: currentFilters.limit
+                    });
+                }
+
+                console.log('Search result:', result); // Debug
+
+                const games = result.content || result.data || result.games || [];
+                const total = result.totalElements ?? result.total ?? games.length;
+
+                console.log('Games:', games, 'Total:', total, 'Count:', games.length); // Debug
+
+                document.getElementById('resultsCount').textContent = total;
+
+                if (games.length === 0) {
+                    gamesGrid.style.display = 'none';
+                    pagination.style.display = 'none';
+                    noResults.style.display = 'block';
+                    return;
+                }
+
+                gamesGrid.style.display = 'grid';
+                pagination.style.display = 'flex';
+                noResults.style.display = 'none';
+
+                // Render games
+                gamesGrid.innerHTML = games.map(game => createGameCard(game)).join('');
+
+                // Render pagination
+                totalPages = Math.ceil(total / currentFilters.limit) || 1;
+                renderPagination();
+
+                // Update active filters display
+                updateActiveFilters();
+
+            } catch (error) {
+                console.error('Error loading games:', error);
+                showError(gamesGrid, 'Không thể tải danh sách game. Vui lòng thử lại.');
+            }
+        }
+
+        function applyFilters() {
+            currentFilters.category = document.getElementById('categoryFilter').value;
+            currentFilters.sort = document.getElementById('sortFilter').value;
+            currentFilters.limit = document.getElementById('limitFilter').value;
+            currentPage = 1;
+
+            // Update URL
+            const url = new URL(window.location);
+            if (currentFilters.q) url.searchParams.set('q', currentFilters.q);
+            else url.searchParams.delete('q');
+            
+            if (currentFilters.category) url.searchParams.set('category', currentFilters.category);
+            else url.searchParams.delete('category');
+            
+            url.searchParams.set('sort', currentFilters.sort);
+            url.searchParams.delete('page');
+            
+            window.history.pushState({}, '', url);
+
+            loadSearchResults();
+        }
+
+        function clearFilters() {
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('sortFilter').value = 'newest';
+            document.getElementById('limitFilter').value = '12';
+            document.getElementById('headerSearch').value = '';
+            
+            currentFilters = {
+                q: '',
+                category: '',
+                sort: 'newest',
+                limit: 12
+            };
+            currentPage = 1;
+
+            window.history.pushState({}, '', 'search.html');
+            document.getElementById('searchQuery').textContent = '""';
+            
+            loadSearchResults();
+        }
+
+        function searchFromHeader() {
+            const query = document.getElementById('headerSearch').value.trim();
+            if (query) {
+                currentFilters.q = query;
+                document.getElementById('searchQuery').textContent = `"${query}"`;
+                
+                const url = new URL(window.location);
+                url.searchParams.set('q', query);
+                window.history.pushState({}, '', url);
+                
+                loadSearchResults();
+            }
+        }
+
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            
+            // Previous button
+            html += `<button class="page-btn ${currentPage === 1 ? 'disabled' : ''}" 
+                           onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>
+                        ← Trước
+                     </button>`;
+
+            // Page numbers
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, currentPage + 2);
+
+            if (startPage > 1) {
+                html += `<button class="page-btn" onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) html += `<span class="page-ellipsis">...</span>`;
+            }
+
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" 
+                               onclick="goToPage(${i})">${i}</button>`;
+            }
+
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) html += `<span class="page-ellipsis">...</span>`;
+                html += `<button class="page-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+
+            // Next button
+            html += `<button class="page-btn ${currentPage === totalPages ? 'disabled' : ''}" 
+                           onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>
+                        Sau →
+                     </button>`;
+
+            pagination.innerHTML = html;
+        }
+
+        function goToPage(page) {
+            if (page < 1 || page > totalPages || page === currentPage) return;
+            
+            currentPage = page;
+            
+            const url = new URL(window.location);
+            url.searchParams.set('page', page);
+            window.history.pushState({}, '', url);
+            
+            loadSearchResults();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateActiveFilters() {
+            const container = document.getElementById('activeFilters');
+            const filters = [];
+
+            if (currentFilters.category) {
+                const category = categories.find(c => 
+                    (c.id || c.slug || c.code).toString() === currentFilters.category
+                );
+                filters.push({ type: 'category', label: category?.name || currentFilters.category });
+            }
+
+            if (currentFilters.sort !== 'newest') {
+                const sortName = document.querySelector(`#sortFilter option[value="${currentFilters.sort}"]`).text;
+                filters.push({ type: 'sort', label: sortName });
+            }
+
+            if (filters.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = `
+                <span class="filter-label">Đang lọc:</span>
+                ${filters.map(f => `
+                    <span class="filter-tag">
+                        ${f.label}
+                        <button onclick="removeFilter('${f.type}')">×</button>
+                    </span>
+                `).join('')}
+            `;
+        }
+
+        function removeFilter(type) {
+            if (type === 'category') {
+                document.getElementById('categoryFilter').value = '';
+            } else if (type === 'sort') {
+                document.getElementById('sortFilter').value = 'newest';
+            }
+            applyFilters();
+        }
+
+        // Override createGameCard to use custom playGame
+        function createGameCard(game) {
+            const isFavorite = userFavorites.has(game.id);
+            
+            return `
+                <div class="game-card ${game.featured ? 'featured' : ''}" data-game-id="${game.id}">
+                    <div class="game-thumb">
+                        <img src="${game.thumbnail || 'placeholder.jpg'}" alt="${game.title}" class="game-image">
+                        <div class="game-overlay">
+                            <button class="play-btn" onclick="playGame(${game.id})">Chơi ngay</button>
+                        </div>
+                        ${window.API.Auth.isLoggedIn() ? `
+                            <button class="favorite-btn ${isFavorite ? 'active' : ''}" 
+                                    onclick="toggleFavorite(event, ${game.id}, this)"
+                                    data-game-id="${game.id}"
+                                    title="${isFavorite ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}">
+                                ❤️
+                            </button>
+                        ` : ''}
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title" onclick="playGame(${game.id})">${game.title}</h3>
+                        <div class="game-meta">
+                            <span class="rating">⭐ ${game.averageRating || game.rating || '4.5'}</span>
+                            <span class="plays">👁 ${formatNumber(game.views || 0)}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function toggleFavorite(event, gameId, btn) {
+            event.stopPropagation();
+            if (!window.API.Auth.isLoggedIn()) {
+                alert('Vui lòng đăng nhập để thêm vào yêu thích');
+                return;
+            }
+            try {
+                await window.API.Favorites.toggleFavorite(gameId);
+                // Toggle UI
+                btn.classList.toggle('active');
+                const isActive = btn.classList.contains('active');
+                btn.title = isActive ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích';
+                // Update cache
+                if (isActive) {
+                    userFavorites.add(gameId);
+                } else {
+                    userFavorites.delete(gameId);
+                }
+            } catch (err) {
+                console.error('Error toggling favorite:', err);
+                alert('Không thể thêm vào yêu thích');
+            }
+        }
+
+        async function playGame(gameId) {
+            // Add to history if logged in
+            if (window.API.Auth.isLoggedIn()) {
+                try {
+                    await window.API.History.addToHistory(gameId);
+                    console.log('Added to history');
+                } catch (err) {
+                    console.error('Failed to add history:', err);
+                }
+            }
+            
+            // Increment views
+            try {
+                await window.API.Games.incrementViews(gameId);
+            } catch (err) {
+                console.error('Failed to increment views:', err);
+            }
+            
+            window.location.href = `game.html?id=${gameId}`;
+        }
+
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+            return num;
+        }
+    </script>
+</body>
+</html>
