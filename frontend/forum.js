@@ -333,3 +333,117 @@ async function toggleCommentReaction(postId, commentId, isLike) {
         showError('Không thể cập nhật tương tác bình luận.');
     }
 }
+
+function renderReply(reply, postId) {
+    const authorLabel = reply.user?.role === 'ADMIN' ? `${reply.user.username} (Admin)` : reply.user?.username || 'Người dùng';
+
+    return `
+        <div class="reply-card">
+            <div class="reply-meta">
+                <span><strong>${authorLabel}</strong></span>
+                <span>${formatDate(reply.createdAt)}</span>
+                ${reply.reported ? '<span class="badge-tag" style="background: rgba(255, 82, 82, 0.15); color: #ff8a80;">Báo cáo</span>' : ''}
+            </div>
+            <p>${reply.content}</p>
+            <div class="reply-actions">
+                <button onclick="toggleCommentReaction(${postId}, ${reply.id}, true)">👍 ${reply.likes || 0}</button>
+                <button onclick="toggleCommentReaction(${postId}, ${reply.id}, false)">👎 ${reply.dislikes || 0}</button>
+                <button onclick="replyToComment(${postId}, ${reply.id})">Trả lời</button>
+                <button onclick="reportComment(${postId}, ${reply.id})">Báo cáo</button>
+                ${canEditComment(reply) ? `<button onclick="editComment(${postId}, ${reply.id})">Sửa</button><button onclick="deleteComment(${postId}, ${reply.id})">Xoá</button>` : ''}
+            </div>
+        </div>
+    `;
+}
+
+async function deletePost(postId) {
+    if (!confirm('Bạn có chắc muốn xoá bài viết này không?')) return;
+    try {
+        await window.API.Forum.deletePost(postId);
+        showSuccess('Bài viết đã được xoá.');
+        forumState.selectedPostId = null;
+        await loadForumData();
+    } catch (error) {
+        showError('Không thể xoá bài viết.');
+    }
+}
+
+function openPostModal(editPostId = null) {
+    const user = getCurrentUser();
+    if (!user) {
+        window.location.href = 'login.html?redirect=forum.html';
+        return;
+    }
+
+    forumState.editingPostId = editPostId;
+    const modal = document.getElementById('postModal');
+    const titleInput = document.getElementById('postTitle');
+    const bodyInput = document.getElementById('postBody');
+    const categorySelect = document.getElementById('postCategory');
+    const modalTitle = document.getElementById('modalTitle');
+
+    if (editPostId) {
+        const post = forumState.posts.find(item => item.id === editPostId);
+        if (!post) return;
+        titleInput.value = post.title;
+        bodyInput.value = post.body;
+        categorySelect.value = post.category || 'Chiến thuật';
+        modalTitle.textContent = 'Chỉnh sửa bài viết';
+    } else {
+        titleInput.value = '';
+        bodyInput.value = '';
+        categorySelect.value = 'Chiến thuật';
+        modalTitle.textContent = 'Tạo bài viết mới';
+    }
+
+    modal.classList.add('active');
+}
+
+async function savePost() {
+    const titleInput = document.getElementById('postTitle');
+    const bodyInput = document.getElementById('postBody');
+    const categorySelect = document.getElementById('postCategory');
+    const title = titleInput.value.trim();
+    const body = bodyInput.value.trim();
+    const category = categorySelect.value;
+
+    if (!title || !body) {
+        alert('Vui lòng nhập tiêu đề và nội dung bài viết.');
+        return;
+    }
+
+    try {
+        if (forumState.editingPostId) {
+            await window.API.Forum.updatePost(forumState.editingPostId, { title, body, category });
+            showSuccess('Bài viết đã được cập nhật.');
+        } else {
+            await window.API.Forum.createPost({ title, body, category });
+            showSuccess('Bài viết mới đã được tạo.');
+        }
+        closePostModal();
+        await loadForumData();
+    } catch (error) {
+        showError('Không thể lưu bài viết. Vui lòng kiểm tra lại.');
+    }
+}
+
+function canEditPost(post) {
+    const user = getCurrentUser();
+    return user && (user.username === post.user?.username || user.role === 'ADMIN');
+}
+
+function closePostModal() {
+    document.getElementById('postModal')?.classList.remove('active');
+}
+
+function showError(message) {
+    alert(message);
+}
+
+function showSuccess(message) {
+    alert(message);
+}
+
+function formatDate(dateString) {
+    return new Date(dateString).toLocaleString();
+}
