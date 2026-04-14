@@ -226,3 +226,110 @@ function resetForumFilters() {
     document.getElementById('sortPosts').value = 'newest';
     renderPostList();
 }
+
+async function submitComment(postId) {
+    const textarea = document.getElementById('newComment');
+    if (!textarea) return;
+    const content = textarea.value.trim();
+    if (!content) {
+        alert('Vui lòng nhập nội dung bình luận.');
+        return;
+    }
+
+    try {
+        await window.API.Forum.addComment(postId, { content });
+        textarea.value = '';
+        showSuccess('Bình luận đã được gửi.');
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể gửi bình luận.');
+    }
+}
+
+function renderComment(comment, postId) {
+    const authorLabel = comment.user?.role === 'ADMIN' ? `${comment.user.username} (Admin)` : comment.user?.username || 'Người dùng';
+    const repliesHtml = comment.replies?.length
+        ? comment.replies.map(reply => renderReply(reply, postId)).join('')
+        : '';
+
+    return `
+        <div class="comment-card">
+            <div class="comment-meta">
+                <span><strong>${authorLabel}</strong></span>
+                <span>${formatDate(comment.createdAt)}</span>
+                ${comment.reported ? '<span class="badge-tag" style="background: rgba(255, 82, 82, 0.15); color: #ff8a80;">Báo cáo</span>' : ''}
+            </div>
+            <p>${comment.content}</p>
+            <div class="comment-actions">
+                <button onclick="toggleCommentReaction(${postId}, ${comment.id}, true)">👍 ${comment.likes || 0}</button>
+                <button onclick="toggleCommentReaction(${postId}, ${comment.id}, false)">👎 ${comment.dislikes || 0}</button>
+                <button onclick="replyToComment(${postId}, ${comment.id})">Trả lời</button>
+                <button onclick="reportComment(${postId}, ${comment.id})">Báo cáo</button>
+                ${canEditComment(comment) ? `<button onclick="editComment(${postId}, ${comment.id})">Sửa</button><button onclick="deleteComment(${postId}, ${comment.id})">Xoá</button>` : ''}
+            </div>
+            ${repliesHtml}
+        </div>
+    `;
+}
+
+async function replyToComment(postId, commentId) {
+    const user = getCurrentUser();
+    if (!user) {
+        window.location.href = 'login.html?redirect=forum.html';
+        return;
+    }
+
+    const replyContent = prompt('Nhập trả lời của bạn:');
+    if (!replyContent || !replyContent.trim()) return;
+
+    try {
+        await window.API.Forum.replyComment(postId, commentId, { content: replyContent.trim() });
+        showSuccess('Đã gửi trả lời.');
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể gửi trả lời.');
+    }
+}
+
+async function editComment(postId, commentId) {
+    const user = getCurrentUser();
+    if (!user) {
+        window.location.href = 'login.html?redirect=forum.html';
+        return;
+    }
+
+    const comment = findCommentById(forumState.currentPost?.comments || [], commentId);
+    if (!comment) return;
+
+    const content = prompt('Chỉnh sửa bình luận:', comment.content);
+    if (!content || !content.trim()) return;
+
+    try {
+        await window.API.Forum.updateComment(postId, commentId, { content: content.trim() });
+        showSuccess('Bình luận đã được cập nhật.');
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể cập nhật bình luận.');
+    }
+}
+
+async function deleteComment(postId, commentId) {
+    if (!confirm('Bạn có chắc muốn xoá bình luận này không?')) return;
+    try {
+        await window.API.Forum.deleteComment(postId, commentId);
+        showSuccess('Bình luận đã được xoá.');
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể xoá bình luận.');
+    }
+}
+
+async function toggleCommentReaction(postId, commentId, isLike) {
+    try {
+        if (isLike) await window.API.Forum.likeComment(postId, commentId);
+        else await window.API.Forum.dislikeComment(postId, commentId);
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể cập nhật tương tác bình luận.');
+    }
+}

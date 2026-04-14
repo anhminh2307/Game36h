@@ -22,5 +22,19 @@ public class ForumAdminController {
     public ResponseEntity<Void> resolvePostReport(@PathVariable Long id) {
         forumService.resolvePostReport(id);
         return ResponseEntity.noContent().build();
-    }   
+    }
+
+        @PutMapping("/comments/{id}/resolve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> resolveCommentReport(@PathVariable Long id) {
+        forumService.resolveCommentReport(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/comments/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        forumService.deleteComment(id, null, true);
+        return ResponseEntity.noContent().build();
+    }
 }

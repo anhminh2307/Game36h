@@ -461,6 +461,9 @@ const ForumAPI = {
     deletePost(id) {
         return apiCall(`/forum/posts/${id}`, 'DELETE', null, AuthAPI.getToken());
     },
+    addComment(postId, data) {
+        return apiCall(`/forum/posts/${postId}/comments`, 'POST', data, AuthAPI.getToken());
+    },
 };
 
 // Export các API modules
@@ -472,7 +475,8 @@ window.API = {
     Games: GamesAPI,
     Favorites: FavoritesAPI,
     History: HistoryAPI,
-    UserGames: UserGamesAPI
+    UserGames: UserGamesAPI,
+    Forum: ForumAPI,
 };
 
 console.log('API loaded', window.API);
