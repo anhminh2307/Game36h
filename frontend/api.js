@@ -512,8 +512,20 @@ const ForumAPI = {
     dislikePost(id) {
         return apiCall(`/forum/posts/${id}/dislike`, 'POST', null, AuthAPI.getToken());
     },
+    reportPost(id) {
+        return apiCall(`/forum/posts/${id}/report`, 'POST', null, AuthAPI.getToken());
+    },
     addComment(postId, data) {
         return apiCall(`/forum/posts/${postId}/comments`, 'POST', data, AuthAPI.getToken());
+    },
+    replyComment(postId, commentId, data) {
+        return apiCall(`/forum/posts/${postId}/comments/${commentId}/reply`, 'POST', data, AuthAPI.getToken());
+    },
+    updateComment(postId, commentId, data) {
+        return apiCall(`/forum/posts/${postId}/comments/${commentId}`, 'PUT', data, AuthAPI.getToken());
+    },
+    deleteComment(postId, commentId) {
+        return apiCall(`/forum/posts/${postId}/comments/${commentId}`, 'DELETE', null, AuthAPI.getToken());
     },
     likeComment(postId, commentId) {
         return apiCall(`/forum/posts/${postId}/comments/${commentId}/like`, 'POST', null, AuthAPI.getToken());
@@ -521,20 +533,27 @@ const ForumAPI = {
     dislikeComment(postId, commentId) {
         return apiCall(`/forum/posts/${postId}/comments/${commentId}/dislike`, 'POST', null, AuthAPI.getToken());
     },
-    replyComment(postId, commentId, data) {
-        return apiCall(`/forum/posts/${postId}/comments/${commentId}/reply`, 'POST', data, AuthAPI.getToken());
-    },
-    reportPost(id) {
-        return apiCall(`/forum/posts/${id}/report`, 'POST', null, AuthAPI.getToken());
-    },
+    
     reportComment(postId, commentId) {
         return apiCall(`/forum/posts/${postId}/comments/${commentId}/report`, 'POST', null, AuthAPI.getToken());
     },
+    getAdminReports() {
+        return apiCall('/admin/forum/reports', 'GET', null, AuthAPI.getToken());
+    },
+    resolvePostReport(id) {
+        return apiCall(`/admin/forum/posts/${id}/resolve`, 'PUT', null, AuthAPI.getToken());
+    },
+    resolveCommentReport(id) {
+        return apiCall(`/admin/forum/comments/${id}/resolve`, 'PUT', null, AuthAPI.getToken());
+    },
+    deleteReportedComment(id) {
+        return apiCall(`/admin/forum/comments/${id}`, 'DELETE', null, AuthAPI.getToken());
+    }
 };
 
 // Export các API modules
 window.API = {
-    Auth: AuthAPI,gi
+    Auth: AuthAPI,
     Admin: AdminAPI,
     baseUrl: API_BASE_URL,
     Categories: CategoriesAPI,

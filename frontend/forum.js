@@ -475,4 +475,67 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleString();
 }
 
+async function renderAdminSection() {
+    const adminSection = document.getElementById('adminReviewSection');
+    if (!adminSection) return;
+
+    const user = getCurrentUser();
+    if (!user || user.role !== 'ADMIN') {
+        adminSection.style.display = 'none';
+        return;
+    }
+
+    adminSection.style.display = 'block';
+
+    try {
+        const reported = await window.API.Forum.getAdminReports();
+        const summary = document.getElementById('adminReviewSummary');
+        summary.textContent = `Có ${reported.length} nội dung đang chờ duyệt.`;
+
+        const reportedItems = reported.map(item => `
+            <div class="comment-card">
+                <p><strong>${item.type}:</strong> ${item.summary}</p>
+                <p>Đăng bởi ${item.author} • ${formatDate(item.createdAt)}</p>
+                <div class="comment-actions">
+                    ${item.commentId ? `<button onclick="resolveCommentReport(${item.commentId})">Đã xử lý</button><button onclick="deleteReportedComment(${item.commentId})">Xoá nội dung</button>` : `<button onclick="resolvePostReport(${item.postId})">Đã xử lý</button><button onclick="deletePost(${item.postId})">Xoá nội dung</button>`}
+                </div>
+            </div>
+        `).join('');
+
+        adminSection.querySelector('#reportedItems').innerHTML = reportedItems.length ? reportedItems : '<p>Không có nội dung báo cáo.</p>';
+    } catch (error) {
+        adminSection.querySelector('#reportedItems').innerHTML = '<p>Không thể tải báo cáo.</p>';
+    }
+}
+
+async function resolvePostReport(postId) {
+    try {
+        await window.API.Forum.resolvePostReport(postId);
+        showSuccess('Báo cáo bài viết đã được xử lý.');
+        await loadForumData();
+    } catch (error) {
+        showError('Không thể xử lý báo cáo bài viết.');
+    }
+}
+
+async function resolveCommentReport(commentId) {
+    try {
+        await window.API.Forum.resolveCommentReport(commentId);
+        showSuccess('Báo cáo bình luận đã được xử lý.');
+        await loadForumData();
+    } catch (error) {
+        showError('Không thể xử lý báo cáo bình luận.');
+    }
+}
+
+async function deleteReportedComment(commentId) {
+    try {
+        await window.API.Forum.deleteReportedComment(commentId);
+        showSuccess('Bình luận vi phạm đã được xoá.');
+        await loadForumData();
+    } catch (error) {
+        showError('Không thể xoá bình luận vi phạm.');
+    }
+}
+
 // Helper function to find a comment by ID (including nested replies)
