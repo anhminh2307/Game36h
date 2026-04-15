@@ -683,6 +683,37 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+function renderGames() {
+    const container = document.getElementById('gamesContainer');
+    if (!container) return;
+
+    // Xóa nội dung cũ (nếu có)
+    container.innerHTML = '';
+
+    // Duyệt qua từng game trong GAMES_DATA (từ file data.js)
+    Object.keys(GAMES_DATA).forEach(key => {
+        const game = GAMES_DATA[key];
+        
+        // Tạo cấu trúc HTML cho mỗi card
+        const gameCard = `
+            <div class="game-card">
+                <a href="game.html?id=${key}">
+                    <div class="game-thumb">
+                        <img src="${game.thumb}" alt="${game.title}">
+                    </div>
+                    <div class="game-info">
+                        <h3 class="game-title">${game.title}</h3>
+                        <div class="game-meta">⭐ ${game.rating} | 👁 ${game.views}</div>
+                    </div>
+                </a>
+            </div>
+        `;
+        
+        // Thêm vào container
+        container.innerHTML += gameCard;
+    });
+}
+
 function initHomePage() {
     // Load featured games
     const featuredContainer = document.querySelector('.game-section:first-of-type .games-grid');
