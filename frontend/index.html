@@ -31,6 +31,7 @@
             </div>
 
             <div class="header-actions">
+                <a href="forum.html" class="btn-forum">Diễn đàn</a>
                 <a href="login.html" class="btn-login">Đăng nhập</a>
                 <a href="register.html" class="btn-register">Đăng ký</a>
             </div>
@@ -129,16 +130,15 @@
 
             if (window.API.Auth.isLoggedIn()) {
                 const user = window.API.Auth.getCurrentUser();
-                const adminBtn = user?.role === 'ADMIN' ? '<a href="admin/admin.html" class="btn-register">⚙️ Admin Dashboard</a>' : '';    
+                const adminBtn = user?.role === 'ADMIN' ? '<a href="admin/admin.html" class="btn-register">⚙️ Admin Dashboard</a>' : '';
                 headerActions.innerHTML = `
-                    <div class="header-actions logged-in" id="headerActions">
-                        ${adminBtn}
-                        <div class="user-dropdown">
-                            <span class="username" id="username">Người dùng</span>
-                            <div class="dropdown-menu">
-                                <a href="profile.html">Thông tin cá nhân</a>
-                                <a href="support.html">Hỗ trợ</a>
-                            </div>
+                    <a href="forum.html" class="btn-forum">Diễn đàn</a>
+                    ${adminBtn}
+                    <div class="user-dropdown">
+                        <span class="username" id="username">Người dùng</span>
+                        <div class="dropdown-menu">
+                            <a href="profile.html">Thông tin cá nhân</a>
+                            <a href="support.html">Hỗ trợ</a>
                         </div>
                     </div>
                 `;

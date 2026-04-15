@@ -9,6 +9,7 @@ const forumState = {
 };
 
 function initForumPage() {
+    renderForumHeader();
     loadForumData();
     document.getElementById('forumSearch')?.addEventListener('input', handleForumSearch);
     document.getElementById('filterTitle')?.addEventListener('input', handleFilterTitle);
@@ -16,6 +17,33 @@ function initForumPage() {
     document.getElementById('searchInput')?.addEventListener('keypress', event => {
         if (event.key === 'Enter') performSearch();
     });
+}
+
+function renderForumHeader() {
+    const headerActions = document.querySelector('.header-actions');
+    if (!headerActions) return;
+
+    const user = getCurrentUser();
+    if (user) {
+        const adminBtn = user.role === 'ADMIN' ? '<a href="admin/admin.html" class="btn-register">⚙️ Admin Dashboard</a>' : '';
+        headerActions.innerHTML = `
+            <a href="forum.html" class="btn-forum active">Diễn đàn</a>
+            ${adminBtn}
+            <div class="user-dropdown">
+                <span class="username">${user.username || 'Người dùng'}</span>
+                <div class="dropdown-menu">
+                    <a href="profile.html">Thông tin cá nhân</a>
+                    <a href="support.html">Hỗ trợ</a>
+                </div>
+            </div>
+        `;
+    } else {
+        headerActions.innerHTML = `
+            <a href="forum.html" class="btn-forum active">Diễn đàn</a>
+            <a href="login.html" class="btn-login">Đăng nhập</a>
+            <a href="register.html" class="btn-register">Đăng ký</a>
+        `;
+    }
 }
 
 async function loadForumData() {
@@ -108,7 +136,7 @@ function createPostCard(post) {
     const commentCount = post.comments?.length || 0;
 
     return `
-        <div class="forum-post-card ${selectedClass}">
+        <div class="forum-post-card ${selectedClass}" data-post-id="${post.id}">
             <div class="forum-post-meta">
                 <span class="badge-tag">${post.category || 'Khác'}</span>
                 <span>${formatDate(post.createdAt)}</span>
@@ -186,10 +214,16 @@ async function selectPost(postId) {
 }
 
 async function togglePostReaction(postId, isLike) {
+    const user = requireLogin();
+    if (!user) return;
+
     try {
         if (isLike) await window.API.Forum.likePost(postId);
         else await window.API.Forum.dislikePost(postId);
         await refreshData(postId);
+        
+        // Disable buttons after successful interaction
+        disablePostReactionButtons(postId);
     } catch (error) {
         showError('Không thể cập nhật tương tác bài viết.');
     }
@@ -235,6 +269,9 @@ function performSearch() {
 }
 
 async function submitComment(postId) {
+    const user = requireLogin();
+    if (!user) return;
+
     const textarea = document.getElementById('newComment');
     if (!textarea) return;
     const content = textarea.value.trim();
@@ -260,7 +297,7 @@ function renderComment(comment, postId) {
         : '';
 
     return `
-        <div class="comment-card">
+        <div class="comment-card" data-comment-id="${comment.id}">
             <div class="comment-meta">
                 <span><strong>${authorLabel}</strong></span>
                 <span>${formatDate(comment.createdAt)}</span>
@@ -280,11 +317,8 @@ function renderComment(comment, postId) {
 }
 
 async function replyToComment(postId, commentId) {
-    const user = getCurrentUser();
-    if (!user) {
-        window.location.href = 'login.html?redirect=forum.html';
-        return;
-    }
+    const user = requireLogin();
+    if (!user) return;
 
     const replyContent = prompt('Nhập trả lời của bạn: ');
     if (!replyContent || !replyContent.trim()) return;
@@ -299,11 +333,8 @@ async function replyToComment(postId, commentId) {
 }
 
 async function editComment(postId, commentId) {
-    const user = getCurrentUser();
-    if (!user) {
-        window.location.href = 'login.html?redirect=forum.html';
-        return;
-    }
+    const user = requireLogin();
+    if (!user) return;
 
     const comment = findCommentById(forumState.currentPost?.comments || [], commentId);
     if (!comment) return;
@@ -321,6 +352,9 @@ async function editComment(postId, commentId) {
 }
 
 async function deleteComment(postId, commentId) {
+    const user = requireLogin();
+    if (!user) return;
+
     if (!confirm('Bạn có chắc muốn xoá bình luận này không?')) return;
     try {
         await window.API.Forum.deleteComment(postId, commentId);
@@ -332,16 +366,25 @@ async function deleteComment(postId, commentId) {
 }
 
 async function toggleCommentReaction(postId, commentId, isLike) {
+    const user = requireLogin();
+    if (!user) return;
+
     try {
         if (isLike) await window.API.Forum.likeComment(postId, commentId);
         else await window.API.Forum.dislikeComment(postId, commentId);
         await refreshData(postId);
+        
+        // Disable buttons after successful interaction
+        disableCommentReactionButtons(commentId);
     } catch (error) {
         showError('Không thể cập nhật tương tác bình luận.');
     }
 }
 
 async function reportPost(postId) {
+    const user = requireLogin();
+    if (!user) return;
+
     try {
         await window.API.Forum.reportPost(postId);
         showSuccess('Bài viết đã được báo cáo tới admin.');
@@ -352,6 +395,9 @@ async function reportPost(postId) {
 }
 
 async function reportComment(postId, commentId) {
+    const user = requireLogin();
+    if (!user) return;
+
     try {
         await window.API.Forum.reportComment(postId, commentId);
         showSuccess('Bình luận đã được báo cáo tới admin.');
@@ -365,7 +411,7 @@ function renderReply(reply, postId) {
     const authorLabel = reply.user?.role === 'ADMIN' ? `${reply.user.username} (Admin)` : reply.user?.username || 'Người dùng';
 
     return `
-        <div class="reply-card">
+        <div class="reply-card" data-comment-id="${reply.id}">
             <div class="reply-meta">
                 <span><strong>${authorLabel}</strong></span>
                 <span>${formatDate(reply.createdAt)}</span>
@@ -384,6 +430,9 @@ function renderReply(reply, postId) {
 }
 
 async function deletePost(postId) {
+    const user = requireLogin();
+    if (!user) return;
+
     if (!confirm('Bạn có chắc muốn xoá bài viết này không?')) return;
     try {
         await window.API.Forum.deletePost(postId);
@@ -396,11 +445,8 @@ async function deletePost(postId) {
 }
 
 function openPostModal(editPostId = null) {
-    const user = getCurrentUser();
-    if (!user) {
-        window.location.href = 'login.html?redirect=forum.html';
-        return;
-    }
+    const user = requireLogin();
+    if (!user) return;
 
     forumState.editingPostId = editPostId;
     const modal = document.getElementById('postModal');
@@ -427,6 +473,9 @@ function openPostModal(editPostId = null) {
 }
 
 async function savePost() {
+    const user = requireLogin();
+    if (!user) return;
+
     const titleInput = document.getElementById('postTitle');
     const bodyInput = document.getElementById('postBody');
     const categorySelect = document.getElementById('postCategory');
@@ -540,6 +589,46 @@ async function deleteReportedComment(commentId) {
 
 function getCurrentUser() {
     return window.API?.Auth?.getCurrentUser?.() || null;
+}
+
+function requireLogin() {
+    const user = getCurrentUser();
+    if (!user) {
+        window.location.href = 'login.html?redirect=forum.html';
+        return null;
+    }
+    return user;
+}
+
+function disablePostReactionButtons(postId) {
+    // Disable in post list
+    const postCard = document.querySelector(`.forum-post-card[data-post-id="${postId}"]`);
+    if (postCard) {
+        const likeBtn = postCard.querySelector('button[onclick*="togglePostReaction(' + postId + ', true)"]');
+        const dislikeBtn = postCard.querySelector('button[onclick*="togglePostReaction(' + postId + ', false)"]');
+        if (likeBtn) likeBtn.disabled = true;
+        if (dislikeBtn) dislikeBtn.disabled = true;
+    }
+    
+    // Disable in detail panel
+    const detailPanel = document.getElementById('forumDetailPanel');
+    if (detailPanel && forumState.currentPost?.id === postId) {
+        const likeBtn = detailPanel.querySelector('button[onclick*="togglePostReaction(' + postId + ', true)"]');
+        const dislikeBtn = detailPanel.querySelector('button[onclick*="togglePostReaction(' + postId + ', false)"]');
+        if (likeBtn) likeBtn.disabled = true;
+        if (dislikeBtn) dislikeBtn.disabled = true;
+    }
+}
+
+function disableCommentReactionButtons(commentId) {
+    // Disable in comments
+    const commentCard = document.querySelector(`.comment-card[data-comment-id="${commentId}"], .reply-card[data-comment-id="${commentId}"]`);
+    if (commentCard) {
+        const likeBtn = commentCard.querySelector('button[onclick*="toggleCommentReaction"][onclick*="true"]');
+        const dislikeBtn = commentCard.querySelector('button[onclick*="toggleCommentReaction"][onclick*="false"]');
+        if (likeBtn) likeBtn.disabled = true;
+        if (dislikeBtn) dislikeBtn.disabled = true;
+    }
 }
 
 function canEditComment(comment) {
