@@ -445,6 +445,21 @@ async function toggleGameFavorite(gameId, btn) {
     }
 }
 
+// Submit rating
+async function submitRating(gameId, score) {
+    if (!window.API.Auth.isLoggedIn()) {
+        window.location.href = `login.html?redirect=game.html?id=${gameId}`;
+        return;
+    }
+    
+    try {
+        await window.API.Ratings.rateGame(gameId, score);
+        showSuccess(`Bạn đã đánh giá ${score} sao!`);
+    } catch (error) {
+        console.error('Error submitting rating:', error);
+    }
+}
+
 // ==================== PROFILE ====================
 
 // Load profile data
@@ -524,6 +539,30 @@ function loadHistoryTab(history) {
                 <p>Chơi lần cuối: ${formatDate(item.played_at)}</p>
             </div>
             <button class="btn-play-again" onclick="navigateToGame(${item.game?.id})">Chơi lại</button>
+        </div>
+    `).join('');
+}
+
+// Load ratings tab
+function loadRatingsTab(ratings) {
+    const container = document.querySelector('#ratings .ratings-list');
+    if (!container) return;
+    
+    if (ratings.length === 0) {
+        container.innerHTML = '<div class="no-data">Chưa có đánh giá nào</div>';
+        return;
+    }
+    
+    container.innerHTML = ratings.map(rating => `
+        <div class="rating-item">
+            <div class="rating-game">
+                <div class="rating-thumb">
+                    <img src="${rating.game?.thumbnail || 'placeholder.jpg'}" alt="${rating.game?.title}">
+                </div>
+                <span>${rating.game?.title || 'Unknown Game'}</span>
+            </div>
+            <div class="rating-stars">${'⭐'.repeat(rating.score)}</div>
+            <span class="rating-date">${formatDate(rating.created_at)}</span>
         </div>
     `).join('');
 }

@@ -551,6 +551,103 @@ const ForumAPI = {
     }
 };
 
+// ==================== RATINGS API ====================
+
+const RatingsAPI = {
+    // Lấy đánh giá của user hiện tại
+    async getMyRatings() {
+        const token = AuthAPI.getToken();
+        return apiCall('/ratings/user/6', 'GET', null, token); // Using user ID 3 as example
+    },
+
+    // Đánh giá game
+    async rateGame(gameId, score) {
+        // score: 1-5
+        const token = AuthAPI.getToken();
+        return apiCall('/ratings', 'POST', { gameId: gameId, score }, token);
+    },
+
+    // Cập nhật đánh giá
+    async updateRating(ratingId, score) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/ratings/${ratingId}`, 'PUT', { score }, token);
+    },
+
+    // Xóa đánh giá
+    async deleteRating(ratingId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/ratings/${ratingId}`, 'DELETE', null, token);
+    },
+
+    // Lấy đánh giá trung bình của game
+    async getGameRating(gameId) {
+        return apiCall(`/games/${gameId}/rating`);
+    },
+
+    // Lấy tất cả đánh giá của game
+    async getGameRatings(gameId) {
+        return apiCall(`/games/${gameId}/ratings`);
+    }
+};
+
+// ==================== NOTIFICATIONS API ====================
+
+const NotificationsAPI = {
+    // Lấy thông báo của user
+    async getNotifications(page = 0, size = 10) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/notifications?page=${page}&size=${size}`, 'GET', null, token);
+    },
+
+    // Lấy thông báo chưa đọc
+    async getUnreadNotifications(page = 0, size = 10) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/notifications/unread?page=${page}&size=${size}`, 'GET', null, token);
+    },
+
+    // Lấy thông báo theo ID
+    async getNotificationById(notificationId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/notifications/${notificationId}`, 'GET', null, token);
+    },
+
+    // Tạo thông báo mới
+    async createNotification(content) {
+        const token = AuthAPI.getToken();
+        return apiCall('/notifications', 'POST', { content }, token);
+    },
+
+    // Đánh dấu đã đọc
+    async markAsRead(notificationId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/notifications/${notificationId}/read`, 'PUT', null, token);
+    },
+
+    // Đánh dấu chưa đọc
+    async markAsUnread(notificationId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/notifications/${notificationId}/unread`, 'PUT', null, token);
+    },
+
+    // Đánh dấu tất cả đã đọc
+    async markAllAsRead() {
+        const token = AuthAPI.getToken();
+        return apiCall('/notifications/read-all', 'PUT', null, token);
+    },
+
+    // Xóa thông báo
+    async deleteNotification(notificationId) {
+        const token = AuthAPI.getToken();
+        return apiCall(`/notifications/${notificationId}`, 'DELETE', null, token);
+    },
+
+    // Lấy số lượng thông báo chưa đọc
+    async getUnreadCount() {
+        const token = AuthAPI.getToken();
+        return apiCall('/notifications/unread-count', 'GET', null, token);
+    }
+};
+
 // Export các API modules
 window.API = {
     Auth: AuthAPI,
@@ -562,6 +659,8 @@ window.API = {
     History: HistoryAPI,
     UserGames: UserGamesAPI,
     Forum: ForumAPI,
+    Ratings: RatingsAPI,
+    Notifications: NotificationsAPI,
 };
 
 console.log('API loaded', window.API);
