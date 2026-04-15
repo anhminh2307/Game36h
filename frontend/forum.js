@@ -227,16 +227,6 @@ function resetForumFilters() {
     renderPostList();
 }
 
-function resetForumFilters() {
-    forumState.searchKeyword = '';
-    forumState.filterTitle = '';
-    forumState.sortBy = 'newest';
-    document.getElementById('forumSearch').value = '';
-    document.getElementById('filterTitle').value = '';
-    document.getElementById('sortPosts').value = 'newest';
-    renderPostList();
-}
-
 function performSearch() {
     const query = document.getElementById('searchInput')?.value.trim();
     if (query) {
@@ -465,4 +455,3 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleString();
 }
 
-// Hàm tìm kiếm đệ quy để tìm comment theo ID
