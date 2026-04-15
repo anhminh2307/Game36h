@@ -538,4 +538,31 @@ async function deleteReportedComment(commentId) {
     }
 }
 
-// Helper function to find a comment by ID (including nested replies)
+function getCurrentUser() {
+    return window.API?.Auth?.getCurrentUser?.() || null;
+}
+
+function canEditComment(comment) {
+    const user = getCurrentUser();
+    return user && (user.username === comment.user?.username || user.role === 'ADMIN');
+}
+
+function findCommentById(comments = [], commentId) {
+    for (const comment of comments) {
+        if (comment.id === commentId) return comment;
+        if (comment.replies?.length) {
+            const found = findCommentById(comment.replies, commentId);
+            if (found) return found;
+        }
+    }
+    return null;
+}
+
+function showErrorInMain(message) {
+    const main = document.querySelector('.main-content');
+    if (main) {
+        main.innerHTML = `<div class="forum-card" style="padding: 24px; text-align:center;">${message}</div>`;
+    }
+}
+
+window.addEventListener('DOMContentLoaded', initForumPage);

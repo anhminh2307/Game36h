@@ -130,4 +130,26 @@ public class ForumController {
         Long userId = getUserId(userDetails);
         return ResponseEntity.ok(forumService.reportPost(id, userId));
     }
+
+    @DeleteMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        boolean admin = isAdmin(userDetails);
+        forumService.deleteComment(commentId, userId, admin);
+        return ResponseEntity.noContent().build();
+    }
+    
+    @PutMapping("/posts/{postId}/comments/{commentId}")
+    public ResponseEntity<ForumCommentResponse> updateComment(
+            @PathVariable Long postId,
+            @PathVariable Long commentId,
+            @Valid @RequestBody ForumCommentRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        boolean admin = isAdmin(userDetails);
+        return ResponseEntity.ok(forumService.updateComment(commentId, request, userId, admin));
+    }
 }
