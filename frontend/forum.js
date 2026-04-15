@@ -455,3 +455,4 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleString();
 }
 
+// Helper function to find a comment by ID (including nested replies)
