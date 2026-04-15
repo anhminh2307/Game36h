@@ -661,6 +661,7 @@ window.API = {
     Forum: ForumAPI,
     Ratings: RatingsAPI,
     Notifications: NotificationsAPI,
+    Comments: CommentsAPI,
 };
 
 console.log('API loaded', window.API);
