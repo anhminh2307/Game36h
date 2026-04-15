@@ -341,6 +341,26 @@ async function toggleCommentReaction(postId, commentId, isLike) {
     }
 }
 
+async function reportPost(postId) {
+    try {
+        await window.API.Forum.reportPost(postId);
+        showSuccess('Bài viết đã được báo cáo tới admin.');
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể báo cáo bài viết.');
+    }
+}
+
+async function reportComment(postId, commentId) {
+    try {
+        await window.API.Forum.reportComment(postId, commentId);
+        showSuccess('Bình luận đã được báo cáo tới admin.');
+        await refreshData(postId);
+    } catch (error) {
+        showError('Không thể báo cáo bình luận.');
+    }
+}
+
 function renderReply(reply, postId) {
     const authorLabel = reply.user?.role === 'ADMIN' ? `${reply.user.username} (Admin)` : reply.user?.username || 'Người dùng';
 

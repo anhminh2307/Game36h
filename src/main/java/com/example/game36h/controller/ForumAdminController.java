@@ -17,6 +17,12 @@ public class ForumAdminController {
     @Autowired
     private ForumService forumService;
     
+    @GetMapping("/reports")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<ForumReportResponse>> getReports() {
+        return ResponseEntity.ok(forumService.getReportedItems());
+    }
+
     @PutMapping("/posts/{id}/resolve")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> resolvePostReport(@PathVariable Long id) {

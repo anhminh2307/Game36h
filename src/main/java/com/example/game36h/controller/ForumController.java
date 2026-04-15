@@ -114,4 +114,20 @@ public class ForumController {
         return userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
     }
+
+    @PostMapping("/posts/{postId}/comments/{commentId}/report")
+    public ResponseEntity<ForumCommentResponse> reportComment(
+            @PathVariable Long commentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        return ResponseEntity.ok(forumService.reportComment(commentId, userId));
+    }
+
+    @PostMapping("/posts/{id}/report")
+    public ResponseEntity<ForumPostResponse> reportPost(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        Long userId = getUserId(userDetails);
+        return ResponseEntity.ok(forumService.reportPost(id, userId));
+    }
 }

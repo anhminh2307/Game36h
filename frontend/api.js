@@ -524,11 +524,17 @@ const ForumAPI = {
     replyComment(postId, commentId, data) {
         return apiCall(`/forum/posts/${postId}/comments/${commentId}/reply`, 'POST', data, AuthAPI.getToken());
     },
+    reportPost(id) {
+        return apiCall(`/forum/posts/${id}/report`, 'POST', null, AuthAPI.getToken());
+    },
+    reportComment(postId, commentId) {
+        return apiCall(`/forum/posts/${postId}/comments/${commentId}/report`, 'POST', null, AuthAPI.getToken());
+    },
 };
 
 // Export các API modules
 window.API = {
-    Auth: AuthAPI,
+    Auth: AuthAPI,gi
     Admin: AdminAPI,
     baseUrl: API_BASE_URL,
     Categories: CategoriesAPI,
