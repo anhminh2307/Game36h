@@ -237,6 +237,13 @@ function resetForumFilters() {
     renderPostList();
 }
 
+function performSearch() {
+    const query = document.getElementById('searchInput')?.value.trim();
+    if (query) {
+        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+    }
+}
+
 async function submitComment(postId) {
     const textarea = document.getElementById('newComment');
     if (!textarea) return;
@@ -457,3 +464,5 @@ function showSuccess(message) {
 function formatDate(dateString) {
     return new Date(dateString).toLocaleString();
 }
+
+// Hàm tìm kiếm đệ quy để tìm comment theo ID
