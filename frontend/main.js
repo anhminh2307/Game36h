@@ -266,6 +266,57 @@ async function toggleFavorite(event, gameId) {
     }
 }
 
+// Load comments
+function loadCommentsList(comments) {
+    const container = document.getElementById('commentsList');
+    if (!container) return;
+    
+    if (comments.length === 0) {
+        container.innerHTML = '<div class="no-comments">Chưa có bình luận nào</div>';
+        return;
+    }
+    
+    container.innerHTML = comments.map(comment => `
+        <div class="comment-item">
+            <div class="comment-avatar">
+                <img src="${comment.user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + comment.user?.username}" alt="Avatar">
+            </div>
+            <div class="comment-content">
+                <div class="comment-header">
+                    <span class="comment-author">${comment.user?.username || 'Anonymous'}</span>
+                    <span class="comment-time">${formatDate(comment.created_at)}</span>
+                </div>
+                <p class="comment-text">${comment.content}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Submit comment
+async function submitComment(gameId) {
+    const input = document.getElementById('commentInput');
+    const content = input.value.trim();
+    
+    if (!content) return;
+    
+    if (!window.API.Auth.isLoggedIn()) {
+        window.location.href = `login.html?redirect=game.html?id=${gameId}`;
+        return;
+    }
+    
+    try {
+        await window.API.Comments.addComment(gameId, content);
+        input.value = '';
+        showSuccess('Bình luận đã được gửi!');
+        
+        // Reload comments
+        const result = await window.API.Comments.getComments(gameId);
+        loadCommentsList(result.data || result.comments || []);
+    } catch (error) {
+        alert('Không thể gửi bình luận. Vui lòng thử lại.');
+    }
+}
+
 // Search games
 async function searchGames(query) {
     if (!query.trim()) return;
